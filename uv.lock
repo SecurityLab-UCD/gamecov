@@ -131,6 +131,7 @@ dependencies = [
     { name = "pillow" },
     { name = "pylint" },
     { name = "pytest" },
+    { name = "returns", extra = ["compatible-mypy"] },
 ]
 
 [package.metadata]
@@ -142,6 +143,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pylint", specifier = ">=3.3.7" },
     { name = "pytest", specifier = ">=8.4.1" },
+    { name = "returns", extras = ["compatible-mypy"], specifier = ">=0.21.0" },
 ]
 
 [[package]]
@@ -428,6 +430,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/08/ba/45911d754e8eba3d5a841a5ce61a65a685ff1798421ac054f85aa8747dfb/pytest-8.4.1.tar.gz", hash = "sha256:7c67fd69174877359ed9371ec3af8a3d2b04741818c51e5e99cc1742251fa93c", size = 1517714 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/29/16/c8a903f4c4dffe7a12843191437d7cd8e32751d5de349d45d3fe69544e87/pytest-8.4.1-py3-none-any.whl", hash = "sha256:539c70ba6fcead8e78eebbf1115e8b589e7565830d7d006a8723f19ac8a0afb7", size = 365474 },
+]
+
+[[package]]
+name = "returns"
+version = "0.21.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/83/78/26c8623a46e3e53923b8a442b0c81bda630de39d75f67aa47c7f223d8a1a/returns-0.21.0.tar.gz", hash = "sha256:56e743fb6f80bd83f8a0d31cb2d08b1e30f4e70c9ee9a5d89e400c5217166ef5", size = 104721 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/23/29d0e51d712b54c60513c4aebd969c9c6a188e0044d6a8940592effb210b/returns-0.21.0-py3-none-any.whl", hash = "sha256:5e90e14e76fc88d029c3c95a420077eab7fec25b3dbee48e6a7b5e06d6c39b97", size = 154533 },
+]
+
+[package.optional-dependencies]
+compatible-mypy = [
+    { name = "mypy" },
 ]
 
 [[package]]
