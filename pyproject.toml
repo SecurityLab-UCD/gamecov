@@ -7,13 +7,17 @@ authors = [{ name = "Yifeng He", email = "yfhe@ucdavis.edu" }]
 requires-python = ">=3.11"
 dependencies = [
     "av>=15.0.0",
+    "imagehash>=4.3.2",
     "imageio[ffmpeg]>=2.37.0",
     "mypy>=1.16.1",
-    "numpy>=2.3.1",
+    "numba>=0.61.2",
+    "numpy>=2.2.6",
     "pillow>=11.3.0",
     "pylint>=3.3.7",
     "pytest>=8.4.1",
     "returns[compatible-mypy]>=0.21.0",
+    "scikit-image>=0.25.2",
+    "stitching==0.6.1",
 ]
 
 [build-system]
