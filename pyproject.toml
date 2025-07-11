@@ -3,9 +3,7 @@ name = "mapcov"
 version = "0.1.0"
 description = "Map coverage for coverage-guided game play-testing"
 readme = "README.md"
-authors = [
-    { name = "Yifeng He", email = "yfhe@ucdavis.edu" }
-]
+authors = [{ name = "Yifeng He", email = "yfhe@ucdavis.edu" }]
 requires-python = ">=3.11"
 dependencies = [
     "av>=15.0.0",
@@ -20,3 +18,22 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pylint.messages_control]
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "logging-fstring-interpolation",
+    "unused-import",
+    "ungrouped-imports",
+    "subprocess-run-check",
+    "too-many-instance-attributes",
+    "missing-module-docstring",
+]
+fail-under = 9
