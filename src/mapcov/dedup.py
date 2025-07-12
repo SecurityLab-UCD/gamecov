@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import imagehash
 from PIL import Image
-from skimage.metrics import structural_similarity as ssim
+from skimage import metrics as skm
 
 
 def hash_dedup(
@@ -54,6 +54,8 @@ def ssim_dedup(images: list[Image.Image], threshold: float = 0.95) -> list[Image
         List of unique images
     """
 
+    assert 0 <= threshold <= 1, "Threshold must be between 0 and 1"
+
     if not images:
         return []
 
@@ -74,7 +76,7 @@ def ssim_dedup(images: list[Image.Image], threshold: float = 0.95) -> list[Image
                     img_array, (unique_array.shape[1], unique_array.shape[0])
                 )
 
-            similarity: float = ssim(img_array, unique_array)  # type: ignore
+            similarity: float = skm.structural_similarity(img_array, unique_array)  # type: ignore
             if similarity >= threshold:
                 is_duplicate = True
                 break

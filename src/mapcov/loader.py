@@ -1,6 +1,7 @@
+from typing import Generator
+
 import imageio.v3 as iio
 from PIL import Image
-from typing import Generator
 
 
 def load_mp4(url: str) -> list[Image.Image]:
