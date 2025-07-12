@@ -1,6 +1,7 @@
+from typing import Generator
+
 import imageio.v3 as iio
 from PIL import Image
-import numpy as np
 
 
 def load_mp4(url: str) -> list[Image.Image]:
@@ -12,7 +13,7 @@ def load_mp4(url: str) -> list[Image.Image]:
     return [Image.fromarray(f) for f in frames]
 
 
-def load_mp4_lazy(url: str):
+def load_mp4_lazy(url: str) -> Generator[Image.Image, None, None]:
     """Load an MP4 file as a generator of PIL Images.
     for large videos, use this to avoid high memory usage.
     """
