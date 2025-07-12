@@ -1,8 +1,7 @@
-import os
-import argparse
+import fire
+
 from mapcov import load_mp4, hash_dedup
 from mapcov.stitch import stitch_images
-import fire
 
 
 def main(
