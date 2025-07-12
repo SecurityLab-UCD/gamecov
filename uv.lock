@@ -69,6 +69,15 @@ wheels = [
 ]
 
 [[package]]
+name = "fire"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "termcolor" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6b/b6/82c7e601d6d3c3278c40b7bd35e17e82aa227f050aa9f66cb7b7fce29471/fire-0.7.0.tar.gz", hash = "sha256:961550f07936eaf65ad1dc8360f2b2bf8408fad46abbfa4d2a3794f8d2a95cdf", size = 87189 }
+
+[[package]]
 name = "imagehash"
 version = "4.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -187,6 +196,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "av" },
+    { name = "fire" },
     { name = "imagehash" },
     { name = "imageio", extra = ["ffmpeg"] },
     { name = "mypy" },
@@ -203,6 +213,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "av", specifier = ">=15.0.0" },
+    { name = "fire", specifier = ">=0.7.0" },
     { name = "imagehash", specifier = ">=4.3.2" },
     { name = "imageio", extras = ["ffmpeg"], specifier = ">=2.37.0" },
     { name = "mypy", specifier = ">=1.16.1" },
@@ -694,6 +705,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/82/67/386522eb119fd077228d8c3b75f8a32b746f1f39edae15b97489b05f8b88/stitching-0.6.1.tar.gz", hash = "sha256:50cef52aa2bfc8f615e1296d50b085063b4b1034ea95f87b99f0b9d8154acc45", size = 30521 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ff/69/2b5294bab519ea34162fc44977376cdccc27cf6a3117072bce684260a735/stitching-0.6.1-py3-none-any.whl", hash = "sha256:656997250436e41ba40369cc4778ecc756b792b38a727514242cc73abd3be1d9", size = 30288 },
+]
+
+[[package]]
+name = "termcolor"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/6c/3d75c196ac07ac8749600b60b03f4f6094d54e132c4d94ebac6ee0e0add0/termcolor-3.1.0.tar.gz", hash = "sha256:6a6dd7fbee581909eeec6a756cff1d7f7c376063b14e4a298dc4980309e55970", size = 14324 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/bd/de8d508070629b6d84a30d01d57e4a65c69aa7f5abe7560b8fad3b50ea59/termcolor-3.1.0-py3-none-any.whl", hash = "sha256:591dd26b5c2ce03b9e43f391264626557873ce1d379019786f99b0c2bee140aa", size = 7684 },
 ]
 
 [[package]]

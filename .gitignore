@@ -10,5 +10,6 @@ wheels/
 .venv
 
 *.mp4
+*.jpg
 assets/
 .vscode/

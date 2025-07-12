@@ -1,23 +1,25 @@
 import os
 import argparse
-import mapcov
-from mapcov import load_mp4, hash_dedup, ssim_dedup
+from mapcov import load_mp4, hash_dedup
+from mapcov.stitch import stitch_images
+import fire
 
 
-def main():
+def main(
+    input_mp4_path: str = "assets/videos/38118.mp4", confidence_threshold: float = 0.5
+):
     """placeholder main function to ensure the script can be run."""
-    images = load_mp4("assets/videos/38118.mp4")
+    images = load_mp4(input_mp4_path)
 
-    print(len(images))
-    
     # Deduplicate using hash method
-    unique_images_hash = hash_dedup(images)
-    print(f"Unique images using hash deduplication: {len(unique_images_hash)}")
-    
-    # Deduplicate using SSIM method
-    unique_images_ssim = ssim_dedup(images)
-    print(f"Unique images using SSIM deduplication: {len(unique_images_ssim)}")
+    unique_images = hash_dedup(images)
+
+    # # Stitch images together
+    stitched_image = stitch_images(
+        unique_images, confidence_threshold=confidence_threshold
+    )
+    stitched_image.save(f"output_{confidence_threshold}.jpg")
 
 
 if __name__ == "__main__":
-    main()
+    fire.Fire(main)
