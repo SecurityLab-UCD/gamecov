@@ -1,7 +1,5 @@
 """deduplication of frames."""
 
-from collections import OrderedDict
-
 import cv2
 import numpy as np
 import imagehash
