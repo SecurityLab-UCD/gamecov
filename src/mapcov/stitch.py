@@ -1,9 +1,10 @@
 from PIL import Image
-
 from stitching import AffineStitcher
 import numpy as np
 import numpy.typing as npt
 import cv2
+
+from .frame import Frame
 
 
 def pil_to_cv2(image: Image.Image) -> np.ndarray:
@@ -18,7 +19,7 @@ def pil_to_cv2(image: Image.Image) -> np.ndarray:
 
 
 def stitch_images(
-    images: list[Image.Image],
+    frames: list[Frame],
     detector: str = "sift",
     confidence_threshold: float = 0.5,
 ) -> Image.Image:
@@ -26,11 +27,11 @@ def stitch_images(
     Stitch multiple images together using OpenStitching library.
 
     Args:
-        images: List of PIL Image objects to stitch
+        images: List of Frame objects to stitch
         detector: Feature detector to use (e.g., 'sift', 'orb')
         confidence_threshold: Confidence threshold for stitching (0.4-0.6)
     Returns:
-        Stitched PIL Image
+        Stitched Frame
     """
     assert (
         0.4 <= confidence_threshold <= 0.6
@@ -44,7 +45,7 @@ def stitch_images(
 
     # Perform stitching
     # note: the following line has type ignored because OpenStitching is untyped
-    panorama: npt.NDArray = stitcher.stitch([pil_to_cv2(img) for img in images])  # type: ignore
+    panorama: npt.NDArray = stitcher.stitch([pil_to_cv2(f.img) for f in frames])  # type: ignore
 
     return Image.fromarray(
         cv2.cvtColor(panorama, cv2.COLOR_RGB2BGR)  # convert color back to BGR

@@ -6,10 +6,12 @@ import imagehash
 from PIL import Image
 from skimage import metrics as skm
 
+from .frame import Frame
+
 
 def hash_dedup(
-    images: list[Image.Image], hash_size: int = 8, threshold: int = 5
-) -> list[Image.Image]:
+    frames: list[Frame], hash_size: int = 8, threshold: int = 5
+) -> list[Frame]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
 
@@ -21,27 +23,27 @@ def hash_dedup(
     Returns:
         List of unique images
     """
-    unique_images: dict[imagehash.ImageHash, Image.Image] = {}
+    unique_images: dict[imagehash.ImageHash, Frame] = {}
 
-    for img in images:
+    for f in frames:
         # perceptual hash
-        img_hash = imagehash.average_hash(img, hash_size=hash_size)
+        img_hash = imagehash.average_hash(f.img, hash_size=hash_size)
 
         # Check if similar image already exists
         is_duplicate = False
-        for existing_hash in unique_images.keys():
+        for existing_hash in unique_images:
             if abs(img_hash - existing_hash) <= threshold:
                 is_duplicate = True
                 break
 
         if not is_duplicate:
-            unique_images[img_hash] = img
+            unique_images[img_hash] = f
 
-    # Return images in original order
+    # Return frames in original order
     return list(unique_images.values())
 
 
-def ssim_dedup(images: list[Image.Image], threshold: float = 0.95) -> list[Image.Image]:
+def ssim_dedup(frames: list[Frame], threshold: float = 0.95) -> list[Frame]:
     """
     SSIM (Structural Similarity Index) for duplicate detection.
     More accurate but much slower than hashing, not recommended for fuzzing.
@@ -56,19 +58,19 @@ def ssim_dedup(images: list[Image.Image], threshold: float = 0.95) -> list[Image
 
     assert 0 <= threshold <= 1, "Threshold must be between 0 and 1"
 
-    if not images:
+    if not frames:
         return []
 
-    unique_images = [images[0]]
+    unique_images = [frames[0]]
 
-    for img in images[1:]:
+    for f in frames[1:]:
         # Convert to numpy array
-        img_array = np.array(img.convert("L"))  # Convert to grayscale for SSIM
+        img_array = np.array(f.img.convert("L"))  # Convert to grayscale for SSIM
 
         # Check against all unique images
         is_duplicate = False
-        for unique_img in unique_images:
-            unique_array = np.array(unique_img.convert("L"))
+        for unique_f in unique_images:
+            unique_array = np.array(unique_f.img.convert("L"))
 
             # Resize if needed (SSIM requires same dimensions)
             if img_array.shape != unique_array.shape:
@@ -82,6 +84,6 @@ def ssim_dedup(images: list[Image.Image], threshold: float = 0.95) -> list[Image
                 break
 
         if not is_duplicate:
-            unique_images.append(img)
+            unique_images.append(f)
 
     return unique_images
