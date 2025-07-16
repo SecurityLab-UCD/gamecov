@@ -3,7 +3,6 @@
 import cv2
 import numpy as np
 import imagehash
-from PIL import Image
 from skimage import metrics as skm
 
 from .frame import Frame
