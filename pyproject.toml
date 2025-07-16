@@ -1,9 +1,9 @@
 [project]
-name = "mapcov"
+name = "gamecov"
 version = "0.1.0"
-description = "Map coverage for coverage-guided game play-testing"
+description = "Coverage monitoring for directed game play-testing (Game-Fuzz)"
 readme = "README.md"
-authors = [{ name = "Yifeng He", email = "yfhe@ucdavis.edu" }]
+authors = [{ name = "Yifeng He", email = "yfhe.prsn@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "av>=15.0.0",
