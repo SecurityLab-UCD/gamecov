@@ -1,7 +1,6 @@
 from typing import Generator
 
 import imageio.v3 as iio
-from PIL import Image
 
 from .frame import Frame
 
