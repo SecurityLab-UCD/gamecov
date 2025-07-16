@@ -17,5 +17,8 @@ jobs:
       - name: Set up Python
         run: uv sync
 
+      - name: install pylint
+        run: uv pip install pylint
+
       - name: Lint Source Code
         run: uv run pylint src
