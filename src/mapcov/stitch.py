@@ -27,7 +27,7 @@ def stitch_images(
     Stitch multiple images together using OpenStitching library.
 
     Args:
-        images: List of Frame objects to stitch
+        frames: List of Frame objects to stitch
         detector: Feature detector to use (e.g., 'sift', 'orb')
         confidence_threshold: Confidence threshold for stitching (0.4-0.6)
     Returns:
