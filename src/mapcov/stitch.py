@@ -31,7 +31,7 @@ def stitch_images(
         detector: Feature detector to use (e.g., 'sift', 'orb')
         confidence_threshold: Confidence threshold for stitching (0.4-0.6)
     Returns:
-        Stitched Frame
+        Stitched PIL Image
     """
     assert (
         0.4 <= confidence_threshold <= 0.6
