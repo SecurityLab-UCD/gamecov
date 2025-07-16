@@ -1,4 +1,4 @@
-name: Pylint Linting
+name: Ruff Linting
 
 on: [pull_request]
 
