@@ -1,6 +1,6 @@
 import os
 
-from mapcov.loader import load_mp4, load_mp4_lazy
+from gamecov.loader import load_mp4, load_mp4_lazy
 import imageio.v2 as iiov2
 from PIL import Image
 

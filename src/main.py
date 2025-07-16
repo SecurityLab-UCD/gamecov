@@ -1,7 +1,7 @@
 import fire
 
-from mapcov import load_mp4, hash_dedup
-from mapcov.stitch import stitch_images
+from gamecov import load_mp4, hash_dedup
+from gamecov.stitch import stitch_images
 
 
 def main(
