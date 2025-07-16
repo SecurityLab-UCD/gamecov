@@ -19,17 +19,14 @@ class Coverage(ABC, Generic[T]):
     @property
     @abstractmethod
     def trace(self) -> list[T]:
-        """Return the trace of coverage items."""
-        pass
+        """a list of all coverage items in the trace."""
 
     @property
     @abstractmethod
     def coverage(self) -> set[T]:
-        """Return the set of unique coverage items."""
-        pass
+        """a set of unique coverage items."""
 
     @property
     @abstractmethod
     def path_id(self) -> str:
-        """Generate a unique path ID based on the coverage."""
-        pass
+        """unique path ID based on the coverage."""

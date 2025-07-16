@@ -7,6 +7,7 @@ from mapcov.stitch import stitch_images
 def main(
     input_mp4_path: str = "assets/videos/38118.mp4", confidence_threshold: float = 0.5
 ):
+    """placeholder for main function to load video, deduplicate frames, and stitch images."""
 
     images = load_mp4(input_mp4_path)
 
