@@ -20,7 +20,7 @@ class FrameCoverage(Coverage[Frame]):
         return set(hash_dedup(self.trace))
 
     @property
-    def path_id(self):
+    def path_id(self) -> str:
         """generate a unique path ID based on the coverage"""
         path = tuple(sorted(hash(frame) for frame in self.coverage))
         return hashlib.sha1(str(path).encode()).hexdigest()
