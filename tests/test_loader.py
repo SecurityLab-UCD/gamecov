@@ -30,8 +30,8 @@ def diff_one(mp4_path: str) -> None:
     for i, (frame, v2_frame, lazy_frame) in enumerate(
         zip(frames, v2_frames, lazy_frames)
     ):
-        assert frame.size == v2_frame.size, f"Frame {i} size mismatch"
-        assert frame.size == lazy_frame.size, f"Frame {i} size mismatch"
+        assert frame.img.size == v2_frame.size, f"Frame {i} size mismatch"
+        assert frame.img.size == lazy_frame.img.size, f"Frame {i} size mismatch"
 
 
 def test_load_mp4_differential():
