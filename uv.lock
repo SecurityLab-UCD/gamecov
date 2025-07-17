@@ -88,7 +88,7 @@ requires-dist = [
     { name = "imagehash", specifier = ">=4.3.2" },
     { name = "imageio", extras = ["ffmpeg"], specifier = ">=2.37.0" },
     { name = "numba", specifier = ">=0.61.2" },
-    { name = "numpy", specifier = ">=1.26.4" },
+    { name = "numpy", specifier = ">=2.0.0" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "returns", extras = ["compatible-mypy"], specifier = ">=0.21.0" },
