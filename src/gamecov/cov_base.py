@@ -30,3 +30,15 @@ class Coverage(ABC, Generic[T]):
     @abstractmethod
     def path_id(self) -> str:
         """unique path ID based on the coverage."""
+
+
+class CoverageMonitor(ABC, Generic[T]):
+    """Abstract base class for coverage monitors."""
+
+    @abstractmethod
+    def is_seen(self, cov: Coverage[T]) -> bool:
+        """Check if the coverage has been seen."""
+
+    @abstractmethod
+    def add_cov(self, cov: Coverage[T]) -> None:
+        """Add a new execution coverage record to the monitor."""

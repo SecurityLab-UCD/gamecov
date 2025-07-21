@@ -2,7 +2,7 @@ import hashlib
 
 from .frame import Frame
 from .dedup import hash_dedup
-from .cov_base import Coverage
+from .cov_base import Coverage, CoverageMonitor
 
 
 class FrameCoverage(Coverage[Frame]):
@@ -24,3 +24,21 @@ class FrameCoverage(Coverage[Frame]):
         """generate a unique path ID based on the coverage"""
         path = tuple(sorted(hash(frame) for frame in self.coverage))
         return hashlib.sha1(str(path).encode()).hexdigest()
+
+
+class FrameMonitor(CoverageMonitor[Frame]):
+    """monitor frame coverage in a game-play session"""
+
+    def __init__(self):
+        self.path_seen: set[str] = set()
+        self.item_seen: set[Frame] = set()
+        self.total: int | None = None
+
+    def is_seen(self, cov: Coverage[Frame]) -> bool:
+        """Check if the coverage has been seen."""
+        return cov.path_id in self.path_seen
+
+    def add_cov(self, cov: Coverage[Frame]) -> None:
+        """Add a new execution coverage record to the monitor."""
+        self.path_seen.add(cov.path_id)
+        self.item_seen = hash_dedup(self.item_seen.union(cov.coverage))

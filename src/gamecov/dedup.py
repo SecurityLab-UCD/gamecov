@@ -1,5 +1,7 @@
 """deduplication of frames."""
 
+from typing import Iterable
+
 import cv2
 import numpy as np
 import imagehash
@@ -9,8 +11,8 @@ from .frame import Frame
 
 
 def hash_dedup(
-    frames: list[Frame], hash_size: int = 8, threshold: int = 5
-) -> list[Frame]:
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
+) -> set[Frame]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
 
@@ -39,10 +41,10 @@ def hash_dedup(
             unique_images[img_hash] = f
 
     # Return frames in original order
-    return list(unique_images.values())
+    return set(unique_images.values())
 
 
-def ssim_dedup(frames: list[Frame], threshold: float = 0.95) -> list[Frame]:
+def ssim_dedup(frames: Iterable[Frame], threshold: float = 0.95) -> set[Frame]:
     """
     SSIM (Structural Similarity Index) for duplicate detection.
     More accurate but much slower than hashing, not recommended for fuzzing.
@@ -58,7 +60,10 @@ def ssim_dedup(frames: list[Frame], threshold: float = 0.95) -> list[Frame]:
     assert 0 <= threshold <= 1, "Threshold must be between 0 and 1"
 
     if not frames:
-        return []
+        return set()
+
+    frames = list(frames)
+    assert len(frames) > 0, "No frames provided"
 
     unique_images = [frames[0]]
 
@@ -85,4 +90,4 @@ def ssim_dedup(frames: list[Frame], threshold: float = 0.95) -> list[Frame]:
         if not is_duplicate:
             unique_images.append(f)
 
-    return unique_images
+    return set(unique_images)
