@@ -63,7 +63,6 @@ def ssim_dedup(frames: Iterable[Frame], threshold: float = 0.95) -> set[Frame]:
         return set()
 
     frames = list(frames)
-    assert len(frames) > 0, "No frames provided"
 
     unique_images = [frames[0]]
 
