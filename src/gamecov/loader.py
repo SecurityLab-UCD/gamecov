@@ -11,7 +11,7 @@ def load_mp4(url: str) -> list[Frame]:
     """Load an MP4 file as a list of Frames."""
     # bulk read all frames
     # Warning: large videos will consume a lot of memory (RAM)
-    frames = iio.imread(url, plugin="pyav", extension="mp4")
+    frames = iio.imread(url, plugin="pyav", extension=".mp4")
     return [Frame.fromarray(f) for f in frames]
 
 
@@ -21,7 +21,7 @@ def load_mp4_lazy(url: str) -> Generator[Frame, None, None]:
     """
     assert url.endswith(".p4"), "File must be an MP4 file"
     # iterate over large videos
-    for frame in iio.imiter(url, plugin="pyav", extension="mp4"):
+    for frame in iio.imiter(url, plugin="pyav", extension=".mp4"):
         yield Frame.fromarray(frame)
 
 
