@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from PIL import Image
 from stitching import AffineStitcher
 import numpy as np
@@ -19,7 +21,7 @@ def pil_to_cv2(image: Image.Image) -> np.ndarray:
 
 
 def stitch_images(
-    frames: list[Frame],
+    frames: Iterable[Frame],
     detector: str = "sift",
     confidence_threshold: float = 0.5,
 ) -> Image.Image:
