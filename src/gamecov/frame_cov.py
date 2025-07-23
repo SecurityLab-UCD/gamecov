@@ -29,11 +29,6 @@ class FrameCoverage(Coverage[Frame]):
 class FrameMonitor(CoverageMonitor[Frame]):
     """monitor frame coverage in a game-play session"""
 
-    def __init__(self):
-        self.path_seen: set[str] = set()
-        self.item_seen: set[Frame] = set()
-        self.total: int | None = None
-
     def is_seen(self, cov: Coverage[Frame]) -> bool:
         """Check if the coverage has been seen."""
         return cov.path_id in self.path_seen
