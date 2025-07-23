@@ -35,6 +35,10 @@ class Coverage(ABC, Generic[T]):
 class CoverageMonitor(ABC, Generic[T]):
     """Abstract base class for coverage monitors."""
 
+    def __init__(self):
+        self.path_seen: set[str] = set()
+        self.item_seen: set[T] = set()
+
     @abstractmethod
     def is_seen(self, cov: Coverage[T]) -> bool:
         """Check if the coverage has been seen."""
@@ -42,3 +46,8 @@ class CoverageMonitor(ABC, Generic[T]):
     @abstractmethod
     def add_cov(self, cov: Coverage[T]) -> None:
         """Add a new execution coverage record to the monitor."""
+
+    def reset(self) -> None:
+        """Reset the monitor state."""
+        self.path_seen.clear()
+        self.item_seen.clear()
