@@ -50,5 +50,4 @@ class FrameMonitor(CoverageMonitor[Frame]):
 @safe
 def get_frame_cov(url: str) -> FrameCoverage:
     """Get the frame coverage for a given MP4 file."""
-    frames = load_mp4(url)
-    return FrameCoverage(frames)
+    return FrameCoverage(url)
