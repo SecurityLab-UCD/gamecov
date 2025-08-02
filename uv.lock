@@ -65,7 +65,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/6b/b6/82c7e601d6d3c3278
 
 [[package]]
 name = "gamecov"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "av" },

@@ -1,7 +1,7 @@
-from .loader import load_mp4, load_mp4_lazy, get_frame_cov
+from .loader import load_mp4, load_mp4_lazy
 from .dedup import hash_dedup
 from .frame import Frame
-from .frame_cov import FrameCoverage, FrameMonitor
+from .frame_cov import FrameCoverage, FrameMonitor, get_frame_cov
 from .stitch import stitch_images
 from .cov_base import CoverageItem, Coverage, CoverageMonitor
 
