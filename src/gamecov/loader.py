@@ -33,7 +33,7 @@ def load_mp4_last_n(url: str, n: int) -> list[Frame]:
     props = iio.improps(url, plugin="pyav", extension=".mp4")
 
     # Make sure the codec knows the number of frames
-    assert props.shape[0] != -1
+    assert props.shape[0] != -1, "Video codec does not provide frame count information"
 
     # seek to the last n frames
     start = max(0, props.shape[0] - n)
