@@ -28,6 +28,8 @@ def load_mp4_last_n(url: str, n: int) -> list[Frame]:
     https://stackoverflow.com/questions/73079005/how-to-get-the-last-frame-of-a-video-with-imageio-in-python
     """
 
+    assert n > 0, "n must be a positive integer"
+
     # seeking dimensions first
     # improps is fast since it doesn't decode frames
     props = iio.improps(url, plugin="pyav", extension=".mp4")
