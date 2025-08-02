@@ -1,10 +1,8 @@
 from typing import Generator
 
 import imageio.v3 as iio
-from returns.result import safe
 
 from .frame import Frame
-from .frame_cov import FrameCoverage
 
 
 def load_mp4(url: str) -> list[Frame]:
@@ -22,10 +20,3 @@ def load_mp4_lazy(url: str) -> Generator[Frame, None, None]:
     # iterate over large videos
     for frame in iio.imiter(url, plugin="pyav", extension=".mp4"):
         yield Frame.fromarray(frame)
-
-
-@safe
-def get_frame_cov(url: str) -> FrameCoverage:
-    """Get the frame coverage for a given MP4 file."""
-    frames = load_mp4(url)
-    return FrameCoverage(frames)
