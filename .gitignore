@@ -14,3 +14,5 @@ wheels/
 assets/
 .vscode/
 .hypothesis/
+prof/
+.coverage

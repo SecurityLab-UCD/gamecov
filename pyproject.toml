@@ -63,3 +63,12 @@ warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = false
 plugins = ["returns.contrib.mypy.returns_plugin"]
+
+[tool.pytest.ini_options]
+pytest_plugins = ['pytest_profiling']
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=6.2.1",
+    "pytest-profiling>=1.8.1",
+]
