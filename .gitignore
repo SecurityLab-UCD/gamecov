@@ -13,3 +13,4 @@ wheels/
 *.jpg
 assets/
 .vscode/
+.hypothesis/
