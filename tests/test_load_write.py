@@ -1,8 +1,12 @@
 import os
+import tempfile
 
+from gamecov.dedup import hash_dedup
 from gamecov.loader import load_mp4, load_mp4_lazy
+from gamecov.writer import write_mp4, write_mp4_cv2
 import imageio.v2 as iiov2
 from PIL import Image
+import numpy as np
 
 
 def v2_loader(mp4_path: str) -> list[Image.Image]:
@@ -48,3 +52,40 @@ def test_load_mp4_differential():
 
         mp4_path = os.path.join(assets_dir, f)
         diff_one(mp4_path)
+
+
+def one_round_trip(mp4_path: str):
+    """Test that loading and writing MP4 files preserves the original frames."""
+    frames = load_mp4(mp4_path)
+
+    # Write the frames to a temporary MP4 file
+    with tempfile.NamedTemporaryFile(suffix=".mp4") as temp_file:
+        output_path = temp_file.name
+        write_mp4_cv2(frames, output_path)
+
+        # load the frames from the new MP4 file
+        new_frames = load_mp4(output_path)
+
+        # compare the original and new frames
+        assert len(frames) == len(new_frames), "Frame counts do not match"
+        assert len(hash_dedup(frames)) == len(
+            hash_dedup(new_frames)
+        ), "Unique frame counts do not match"
+        for i, (orig_frame, new_frame) in enumerate(zip(frames, new_frames)):
+            assert orig_frame.img.size == new_frame.img.size, f"Frame {i} size mismatch"
+
+
+def test_load_write_round_trip():
+    """Test that loading and writing MP4 files preserves the original frames."""
+
+    assets_dir = "assets/videos"
+    if not os.path.exists(assets_dir):
+        print(f"Assets directory '{assets_dir}' does not exist.")
+        return
+
+    for f in os.listdir(assets_dir):
+        if not f.endswith(".mp4"):
+            continue
+
+        mp4_path = os.path.join(assets_dir, f)
+        one_round_trip(mp4_path)
