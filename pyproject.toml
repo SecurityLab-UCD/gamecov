@@ -10,9 +10,10 @@ dependencies = [
     "fire>=0.7.0",
     "hypothesis>=6.136.7",
     "imagehash>=4.3.2",
-    "imageio[ffmpeg]>=2.37.0",
+    "imageio>=2.37.0",
     "numba>=0.61.2",
     "numpy>=2.0.0",
+    "opencv-python>=4.11.0.86",
     "pillow>=11.3.0",
     "pytest>=8.4.1",
     "returns[compatible-mypy]>=0.25.0",
@@ -64,11 +65,8 @@ warn_unreachable = true
 warn_unused_ignores = false
 plugins = ["returns.contrib.mypy.returns_plugin"]
 
-[tool.pytest.ini_options]
-pytest_plugins = ['pytest_profiling']
+# [tool.pytest.ini_options]
+# pytest_plugins = ['pytest_profiling']
 
 [dependency-groups]
-dev = [
-    "pytest-cov>=6.2.1",
-    "pytest-profiling>=1.8.1",
-]
+dev = ["pytest-cov>=6.2.1", "pytest-profiling>=1.8.1"]
