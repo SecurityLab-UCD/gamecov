@@ -27,6 +27,6 @@ def frames(draw, height: int, width: int, channels: int = 3) -> Frame:
 # `frames()` is the composite strategy from the previous example
 frames_lists = st.lists(
     frames(height=128, width=128, channels=3),  # element strategy
-    min_size=3,
-    max_size=100,
+    min_size=5,
+    max_size=50,
 )

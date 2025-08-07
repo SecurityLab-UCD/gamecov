@@ -6,7 +6,6 @@ from gamecov.loader import load_mp4, load_mp4_lazy
 from gamecov.writer import write_mp4, write_mp4_cv2
 import imageio.v2 as iiov2
 from PIL import Image
-import numpy as np
 
 
 def v2_loader(mp4_path: str) -> list[Image.Image]:
@@ -61,6 +60,9 @@ def one_round_trip(mp4_path: str):
     # Write the frames to a temporary MP4 file
     with tempfile.NamedTemporaryFile(suffix=".mp4") as temp_file:
         output_path = temp_file.name
+        # NOTE: using cv2 for write since ffmpeg does not support the resolution used in the tests
+        # i.e. ffmpeg resizes the frames from (900, 660) to (912, 672) for macro_block_size=16,
+        # which cannot pass the size check in the tests
         write_mp4_cv2(frames, output_path)
 
         # load the frames from the new MP4 file

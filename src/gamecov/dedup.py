@@ -28,15 +28,14 @@ def hash_dedup(
 
     for f in frames:
         # perceptual hash
-        img_hash = imagehash.average_hash(f.img, hash_size=hash_size)
+        img_hash = imagehash.phash(f.img, hash_size=hash_size)
 
         # Check if similar image already exists
         is_duplicate = False
         for existing_hash in unique_images:
-            if abs(img_hash - existing_hash) <= threshold:
+            if abs(img_hash - existing_hash) <= threshold:  # Hamming distance
                 is_duplicate = True
                 break
-
         if not is_duplicate:
             unique_images[img_hash] = f
 
