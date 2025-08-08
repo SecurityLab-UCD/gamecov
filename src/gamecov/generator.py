@@ -1,4 +1,4 @@
-from hypothesis import given, strategies as st
+from hypothesis import strategies as st
 from hypothesis.strategies import composite
 import hypothesis.extra.numpy as hnp
 import numpy as np
