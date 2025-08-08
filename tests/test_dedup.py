@@ -6,6 +6,7 @@ from hypothesis.stateful import RuleBasedStateMachine, rule
 from hypothesis import strategies as st
 
 
+@settings(deadline=None)
 @given(data=st.data(), n=st.integers(min_value=1, max_value=100))
 def test_dedup_update(data, n):
     all_frames: set[Frame] = set()

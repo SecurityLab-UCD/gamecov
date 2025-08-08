@@ -5,7 +5,7 @@ import pytest
 
 
 def test_smb_monotone():
-    assets_path = "assets/smb"
+    assets_path = os.path.abspath("assets/smb")
 
     if not os.path.exists(assets_path):
         pytest.skip("Assets path does not exist")
