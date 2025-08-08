@@ -3,9 +3,10 @@ import tempfile
 
 from gamecov.dedup import dedup_unique_frames
 from gamecov.loader import load_mp4, load_mp4_lazy
-from gamecov.writer import write_mp4, write_mp4_cv2
+from gamecov.writer import write_mp4_cv2
 import imageio.v2 as iiov2
 from PIL import Image
+import pytest
 
 
 def v2_loader(mp4_path: str) -> list[Image.Image]:
@@ -40,10 +41,9 @@ def diff_one(mp4_path: str) -> None:
 def test_load_mp4_differential():
     """differential test load_mp4, load_mp4_lazy, and v2_loader functions return the same number of frames."""
 
-    assets_dir = "assets/videos"
+    assets_dir = os.path.abspath("assets/videos")
     if not os.path.exists(assets_dir):
-        print(f"Assets directory '{assets_dir}' does not exist.")
-        return
+        pytest.skip("Assets path does not exist")
 
     for f in os.listdir(assets_dir):
         if not f.endswith(".mp4"):
@@ -80,10 +80,9 @@ def one_round_trip(mp4_path: str):
 def test_load_write_round_trip():
     """Test that loading and writing MP4 files preserves the original frames."""
 
-    assets_dir = "assets/videos"
+    assets_dir = os.path.abspath("assets/videos")
     if not os.path.exists(assets_dir):
-        print(f"Assets directory '{assets_dir}' does not exist.")
-        return
+        pytest.skip(f"Assets directory '{assets_dir}' does not exist.")
 
     for f in os.listdir(assets_dir):
         if not f.endswith(".mp4"):

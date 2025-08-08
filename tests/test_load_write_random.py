@@ -21,7 +21,7 @@ def test_load_write_round_trip(frames: list[Frame]):
         # compare the original and new frames
         assert len(frames) == len(new_frames), "Frame counts do not match"
 
-        # NOTE: do not now why dedup does not work here
+        # NOTE: do not know why dedup does not work here
         # assert len(dedup_unique_frames(frames)) == len(
         #     dedup_unique_frames(new_frames)
         # ), "Unique frame counts do not match"
