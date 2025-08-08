@@ -3,7 +3,6 @@ import hashlib
 from returns.result import safe
 from imagehash import ImageHash
 import imagehash
-from .frame import Frame
 from .dedup import dedup_unique_hashes
 from .cov_base import Coverage, CoverageMonitor
 from .loader import load_mp4, load_mp4_lazy
@@ -34,14 +33,14 @@ class FrameCoverage(Coverage[ImageHash]):
         return hashlib.sha1(str(path).encode()).hexdigest()
 
 
-class FrameMonitor(CoverageMonitor[Frame]):
+class FrameMonitor(CoverageMonitor[ImageHash]):
     """monitor frame coverage in a game-play session"""
 
-    def is_seen(self, cov: Coverage[Frame]) -> bool:
+    def is_seen(self, cov: Coverage[ImageHash]) -> bool:
         """Check if the coverage has been seen."""
         return cov.path_id in self.path_seen
 
-    def add_cov(self, cov: Coverage[Frame]) -> None:
+    def add_cov(self, cov: Coverage[ImageHash]) -> None:
         """Add a new execution coverage record to the monitor."""
         self.path_seen.add(cov.path_id)
         self.item_seen = self.item_seen.union(cov.coverage)
