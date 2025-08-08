@@ -69,4 +69,4 @@ plugins = ["returns.contrib.mypy.returns_plugin"]
 # pytest_plugins = ['pytest_profiling']
 
 [dependency-groups]
-dev = ["pytest-cov>=6.2.1", "pytest-profiling>=1.8.1"]
+dev = ["pytest-cov>=6.2.1", "pytest-profiling>=1.8.1", "pytest-xdist>=3.8.0"]
