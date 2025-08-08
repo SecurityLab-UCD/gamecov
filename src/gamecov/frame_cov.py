@@ -1,30 +1,29 @@
 import hashlib
 
 from returns.result import safe
-
-from .frame import Frame
-from .dedup import hash_dedup
+from imagehash import ImageHash
+import imagehash
+from .dedup import dedup_unique_hashes
 from .cov_base import Coverage, CoverageMonitor
-from .loader import load_mp4
+from .loader import load_mp4, load_mp4_lazy
 
 
-class FrameCoverage(Coverage[Frame]):
+class FrameCoverage(Coverage[ImageHash]):
     """track frame coverage in a game-play session"""
 
     def __init__(self, recording_path: str):
         self.recording_path = recording_path
-        frames = load_mp4(recording_path)
-        self.unique_frames = hash_dedup(frames)
+        self.unique_frames = dedup_unique_hashes(load_mp4_lazy(recording_path))
 
     @property
-    def trace(self) -> list[Frame]:
+    def trace(self) -> list[ImageHash]:
         """Note: this function is lazy, loading the frames AGAIN from the recording path.
         You should not call this function if you already have the frames loaded.
         """
-        return load_mp4(self.recording_path)
+        return [imagehash.phash(f.img) for f in load_mp4(self.recording_path)]
 
     @property
-    def coverage(self) -> set[Frame]:
+    def coverage(self) -> set[ImageHash]:
         return set(self.unique_frames)
 
     @property
@@ -34,17 +33,17 @@ class FrameCoverage(Coverage[Frame]):
         return hashlib.sha1(str(path).encode()).hexdigest()
 
 
-class FrameMonitor(CoverageMonitor[Frame]):
+class FrameMonitor(CoverageMonitor[ImageHash]):
     """monitor frame coverage in a game-play session"""
 
-    def is_seen(self, cov: Coverage[Frame]) -> bool:
+    def is_seen(self, cov: Coverage[ImageHash]) -> bool:
         """Check if the coverage has been seen."""
         return cov.path_id in self.path_seen
 
-    def add_cov(self, cov: Coverage[Frame]) -> None:
+    def add_cov(self, cov: Coverage[ImageHash]) -> None:
         """Add a new execution coverage record to the monitor."""
         self.path_seen.add(cov.path_id)
-        self.item_seen = hash_dedup(self.item_seen.union(cov.coverage))
+        self.item_seen = self.item_seen.union(cov.coverage)
 
 
 @safe

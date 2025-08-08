@@ -22,3 +22,6 @@ jobs:
 
       - name: Type Check Source Code
         run: uv run mypy src
+
+      - name: Type Check Unit Tests
+        run : uv run mypy tests
