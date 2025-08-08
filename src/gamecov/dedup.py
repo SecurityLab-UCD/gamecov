@@ -10,7 +10,7 @@ from skimage import metrics as skm
 from .frame import Frame
 
 
-def hash_dedup(
+def dedup_unique_frames(
     frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
 ) -> set[Frame]:
     """
@@ -41,6 +41,39 @@ def hash_dedup(
 
     # Return frames in original order
     return set(unique_images.values())
+
+
+def dedup_unique_hashes(
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
+) -> set[imagehash.ImageHash]:
+    """
+    Remove duplicate or very similar frames using perceptual hashing.
+
+    Args:
+        images: List of PIL Image objects
+        hash_size: Size of the hash (larger = more precise)
+        threshold: Maximum hamming distance to consider images as duplicates
+
+    Returns:
+        List of unique images
+    """
+    unique_images: set[imagehash.ImageHash] = set()
+
+    for f in frames:
+        # perceptual hash
+        img_hash = imagehash.phash(f.img, hash_size=hash_size)
+
+        # Check if similar image already exists
+        is_duplicate = False
+        for existing_hash in unique_images:
+            if abs(img_hash - existing_hash) <= threshold:  # Hamming distance
+                is_duplicate = True
+                break
+        if not is_duplicate:
+            unique_images.add(img_hash)
+
+    # Return frames in original order
+    return unique_images
 
 
 def ssim_dedup(frames: Iterable[Frame], threshold: float = 0.95) -> set[Frame]:

@@ -1,8 +1,7 @@
 from gamecov import Frame
-from gamecov.dedup import hash_dedup
+from gamecov.dedup import dedup_unique_frames, dedup_unique_hashes
 import gamecov.generator as cg
 from hypothesis import given, settings
-from hypothesis.stateful import RuleBasedStateMachine, rule
 from hypothesis import strategies as st
 
 
@@ -13,5 +12,15 @@ def test_dedup_update(data, n):
     for _ in range(n):
         frames = data.draw(cg.frames_lists)
         prev_len = len(all_frames)
-        all_frames.update(hash_dedup(frames))
+        all_frames.update(dedup_unique_frames(frames))
         assert len(all_frames) >= prev_len
+
+
+@settings(deadline=None)
+@given(frames=cg.frames_lists)
+def test_dedup_same_len(frames: list[Frame]):
+    unique_frames = dedup_unique_frames(frames)
+    unique_hashes = dedup_unique_hashes(frames)
+    assert len(unique_frames) == len(
+        unique_hashes
+    ), "Deduplication failed: lengths differ"

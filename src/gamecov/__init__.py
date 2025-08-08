@@ -1,5 +1,5 @@
 from .loader import load_mp4, load_mp4_lazy
-from .dedup import hash_dedup
+from .dedup import dedup_unique_frames
 from .frame import Frame
 from .frame_cov import FrameCoverage, FrameMonitor, get_frame_cov
 from .stitch import stitch_images
@@ -9,7 +9,7 @@ __all__ = [
     "load_mp4",
     "load_mp4_lazy",
     "get_frame_cov",
-    "hash_dedup",
+    "dedup_unique_frames",
     "Frame",
     "FrameCoverage",
     "FrameMonitor",

@@ -1,6 +1,6 @@
 import fire
 
-from gamecov import load_mp4, hash_dedup
+from gamecov import load_mp4, dedup_unique_frames
 from gamecov.stitch import stitch_images
 
 
@@ -12,7 +12,7 @@ def main(
     images = load_mp4(input_mp4_path)
 
     # Deduplicate using hash method
-    unique_images = hash_dedup(images)
+    unique_images = dedup_unique_frames(images)
 
     # # Stitch images together
     stitched_image = stitch_images(
