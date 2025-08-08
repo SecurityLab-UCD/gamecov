@@ -9,8 +9,6 @@ def write_mp4(frames: list[Frame], output_path: str) -> None:
     """Write a list of Frames to an MP4 file."""
     # convert Frames to numpy arrays
     arrays = [np.array(frame.img) for frame in frames]
-    print(arrays)
-    print(output_path)
     iio.imwrite(output_path, arrays, extension=".mp4")
 
 
