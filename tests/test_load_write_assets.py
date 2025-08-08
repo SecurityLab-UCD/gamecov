@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from gamecov.dedup import hash_dedup
+from gamecov.dedup import dedup_unique_frames
 from gamecov.loader import load_mp4, load_mp4_lazy
 from gamecov.writer import write_mp4, write_mp4_cv2
 import imageio.v2 as iiov2
@@ -70,8 +70,8 @@ def one_round_trip(mp4_path: str):
 
         # compare the original and new frames
         assert len(frames) == len(new_frames), "Frame counts do not match"
-        assert len(hash_dedup(frames)) == len(
-            hash_dedup(new_frames)
+        assert len(dedup_unique_frames(frames)) == len(
+            dedup_unique_frames(new_frames)
         ), "Unique frame counts do not match"
         for i, (orig_frame, new_frame) in enumerate(zip(frames, new_frames)):
             assert orig_frame.img.size == new_frame.img.size, f"Frame {i} size mismatch"

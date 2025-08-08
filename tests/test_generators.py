@@ -1,6 +1,6 @@
 from gamecov import Frame
 import gamecov.generator as cg
-from gamecov.dedup import hash_dedup
+from gamecov.dedup import dedup_unique_frames
 
 
 from hypothesis import given, strategies as st, settings
@@ -24,7 +24,7 @@ def test_frames_list(frames: list[Frame]):
 @settings(max_examples=100, deadline=None)
 @given(frames=cg.frames_lists)
 def test_rand_dedup(frames: list[Frame]):
-    assert len(hash_dedup(frames)) <= len(frames), "Deduplication failed"
-    assert len(hash_dedup(frames)) == len(
-        set(hash_dedup(frames))
+    assert len(dedup_unique_frames(frames)) <= len(frames), "Deduplication failed"
+    assert len(dedup_unique_frames(frames)) == len(
+        set(dedup_unique_frames(frames))
     ), "Hash deduplication failed uniqueness check"

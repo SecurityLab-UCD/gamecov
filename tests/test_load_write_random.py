@@ -22,8 +22,8 @@ def test_load_write_round_trip(frames: list[Frame]):
         assert len(frames) == len(new_frames), "Frame counts do not match"
 
         # NOTE: do not now why dedup does not work here
-        # assert len(hash_dedup(frames)) == len(
-        #     hash_dedup(new_frames)
+        # assert len(dedup_unique_frames(frames)) == len(
+        #     dedup_unique_frames(new_frames)
         # ), "Unique frame counts do not match"
         for i, (orig_frame, new_frame) in enumerate(zip(frames, new_frames)):
             assert orig_frame.img.size == new_frame.img.size, f"Frame {i} size mismatch"
