@@ -8,7 +8,7 @@ from .cov_base import Coverage, CoverageMonitor
 from .loader import load_mp4, load_mp4_lazy
 
 
-class FrameCoverage(Coverage[ImageHash]):
+class FrameCoverage:
     """track frame coverage in a game-play session"""
 
     def __init__(self, recording_path: str):
