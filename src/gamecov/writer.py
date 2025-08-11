@@ -16,7 +16,8 @@ def write_mp4(frames: list[Frame], output_path: str) -> None:
 
 def write_mp4_cv2(frames: list[Frame], output_path: str, fps: float = 24.0) -> None:
     """write frames to mp4 using OpenCV.
-    WARNING: OpenCV preserve the original resolution of frames, but changes the color scheme (COLOR_RGB2BGR).
+    WARNING: OpenCV preserve the original resolution of frames,
+    but changes the color scheme (COLOR_RGB2BGR).
     Therefore, the frames's exact pixel value may differ from the original.
     """
     # Get the dimensions from the first frame

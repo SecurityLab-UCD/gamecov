@@ -1,4 +1,5 @@
 import hashlib
+from dataclasses import dataclass, field
 
 from returns.result import safe
 from imagehash import ImageHash
@@ -27,6 +28,7 @@ class FrameCoverage:
 
     @property
     def coverage(self) -> set[ImageHash]:
+        """coverage set of unique frame hashes"""
         return set(self.unique_frames)
 
     @property
@@ -64,12 +66,10 @@ def get_frame_cov(url: str) -> FrameCoverage:
     return FrameCoverage(url)
 
 
+@dataclass
 class _BKNode:
-    __slots__ = ("val", "children")
-
-    def __init__(self, val: int):
-        self.val = val
-        self.children: dict[int, _BKNode] = {}
+    val: int
+    children: dict[int, "_BKNode"] = field(default_factory=dict)
 
 
 class _BKTree:
@@ -123,17 +123,21 @@ class _BKTree:
 # 236.71s call     tests/test_monotone.py::test_monotone
 # 186.90s call     tests/test_monotone.py::test_monotone_BK
 class BKFrameMonitor(FrameMonitor):
+    """FrameMonitor implemented using BK Tree
+    For long videos with many frames,
+    this implementation speed up the process of checking frame coverage significantly.
+    """
+
     def __init__(self, radius: int = RADIUS):
-        """FrameMonitor implemented using BK Tree
-        For long videos with many frames,
-        this implementation speed up the process of checking frame coverage significantly.
-        """
         super().__init__()
         self._bktree = _BKTree()
         self._exact_bytes: set[bytes] = set()
         self.radius = radius
 
     def add_cov(self, cov: Coverage[ImageHash]) -> None:
+        """add coverage to the current set.
+        The deduplication by Hamming distance is managed by a BK-tree.
+        """
         self.path_seen.add(cov.path_id)
         for img_hash in cov.coverage:
             hash_bytes = np.packbits(
