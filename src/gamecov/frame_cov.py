@@ -3,6 +3,8 @@ import hashlib
 from returns.result import safe
 from imagehash import ImageHash
 import imagehash
+import numpy as np
+
 from .dedup import dedup_unique_hashes, is_dup
 from .cov_base import Coverage, CoverageMonitor
 from .loader import load_mp4, load_mp4_lazy
@@ -59,3 +61,89 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
 def get_frame_cov(url: str) -> FrameCoverage:
     """Get the frame coverage for a given MP4 file."""
     return FrameCoverage(url)
+
+
+class _BKNode:
+    __slots__ = ("val", "children")
+
+    def __init__(self, val: int):
+        self.val = val
+        self.children: dict[int, _BKNode] = {}
+
+
+class _BKTree:
+    def __init__(self):
+        self.root: _BKNode | None = None
+
+    def add(self, x: int):
+        """Add a new value `x` to the BK-tree."""
+        if self.root is None:
+            self.root = _BKNode(x)
+            return
+
+        node = self.root
+        while True:
+            d = (x ^ node.val).bit_count()
+            if d == 0:
+                return
+            child = node.children.get(d)
+            if child is None:
+                node.children[d] = _BKNode(x)
+                return
+            node = child
+
+    def any_within(self, x: int, r: int) -> bool:
+        """check if there is any value within the range [x-r, x+r] in the BK-tree.
+
+        Args:
+            x (int): The value to check.
+            r (int): The range.
+
+        Returns:
+            bool: whether any value within the range
+        """
+        if self.root is None:
+            return False
+
+        stack = [self.root]
+        while stack:
+            n = stack.pop()
+            d = (x ^ n.val).bit_count()
+            if d <= r:
+                return True
+            lo, hi = d - r, d + r
+            for dd, child in n.children.items():
+                if lo <= dd <= hi:
+                    stack.append(child)
+        return False
+
+
+# > N_MAX=500 uv run pytest tests/test_monotone.py --durations=0
+# 236.71s call     tests/test_monotone.py::test_monotone
+# 186.90s call     tests/test_monotone.py::test_monotone_BK
+class BK_FrameMonitor(FrameMonitor):
+    def __init__(self):
+        """FrameMonitor implemented using BK Tree
+        For long videos with many frames,
+        this implementation speed up the process of checking frame coverage significantly.
+        """
+        FrameMonitor.__init__(self)
+        self._bktree = _BKTree()
+        self._exact_bytes = set()
+        self.R = 5
+
+    def add_cov(self, cov: Coverage[ImageHash]) -> None:
+        self.path_seen.add(cov.path_id)
+        for img_hash in cov.coverage:
+            hash_bytes = np.packbits(
+                np.asarray(img_hash.hash, dtype=np.uint8),
+                bitorder="big",
+            ).tobytes()
+            if hash_bytes in self._exact_bytes:  # exact dup
+                continue
+
+            x = int.from_bytes(hash_bytes, "big")
+            if not self._bktree.any_within(x, self.R):  # prune most candidates
+                self._bktree.add(x)
+                self._exact_bytes.add(hash_bytes)
+                self.item_seen.add(img_hash)

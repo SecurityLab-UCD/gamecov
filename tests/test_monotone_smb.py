@@ -1,5 +1,6 @@
 import os
 from gamecov import Frame, FrameCoverage, FrameMonitor
+from gamecov.frame_cov import BK_FrameMonitor
 from gamecov.loader import load_mp4, load_mp4_lazy
 import pytest
 
