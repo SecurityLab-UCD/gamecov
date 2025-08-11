@@ -3,7 +3,7 @@ import hashlib
 from returns.result import safe
 from imagehash import ImageHash
 import imagehash
-from .dedup import dedup_unique_hashes
+from .dedup import dedup_unique_hashes, is_dup
 from .cov_base import Coverage, CoverageMonitor
 from .loader import load_mp4, load_mp4_lazy
 
@@ -43,7 +43,11 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
     def add_cov(self, cov: Coverage[ImageHash]) -> None:
         """Add a new execution coverage record to the monitor."""
         self.path_seen.add(cov.path_id)
-        self.item_seen = self.item_seen.union(cov.coverage)
+
+        # O(N*M) but correct and fast in pure Python
+        for img_hash in cov.coverage:
+            if not any(is_dup(img_hash, h) for h in self.item_seen):
+                self.item_seen.add(img_hash)
 
 
 @safe
