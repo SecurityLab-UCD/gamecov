@@ -128,7 +128,7 @@ class BKFrameMonitor(FrameMonitor):
         For long videos with many frames,
         this implementation speed up the process of checking frame coverage significantly.
         """
-        FrameMonitor.__init__(self)
+        super().__init__()
         self._bktree = _BKTree()
         self._exact_bytes: set[bytes] = set()
         self.radius = radius

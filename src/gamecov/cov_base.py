@@ -1,5 +1,5 @@
-from typing import Protocol, TypeVar, runtime_checkable
-from dataclasses import field
+from typing import Protocol, TypeVar, runtime_checkable, Generic
+from abc import ABC, abstractmethod
 
 
 @runtime_checkable
@@ -33,20 +33,20 @@ class Coverage(Protocol[T]):
         ...
 
 
-@runtime_checkable
-class CoverageMonitor(Protocol[T]):
+class CoverageMonitor(ABC, Generic[T]):
     """Abstract base class for coverage monitors."""
 
-    path_seen: set[str] = field(default_factory=set)
-    item_seen: set[T] = field(default_factory=set)
+    def __init__(self):
+        self.path_seen: set[str] = set()
+        self.item_seen: set[T] = set()
 
+    @abstractmethod
     def is_seen(self, cov: Coverage[T]) -> bool:
         """Check if the coverage has been seen."""
-        ...
 
+    @abstractmethod
     def add_cov(self, cov: Coverage[T]) -> None:
         """Add a new execution coverage record to the monitor."""
-        ...
 
     def reset(self) -> None:
         """Reset the monitor state."""
