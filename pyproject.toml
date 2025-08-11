@@ -43,6 +43,7 @@ disable = [
     "subprocess-run-check",
     "too-many-instance-attributes",
     "missing-module-docstring",
+    "unnecessary-ellipsis",          # pylint cannot work with typed Protocol
 ]
 fail-under = 9
 [tool.pylint.typecheck]
