@@ -1,8 +1,7 @@
 import tempfile
 import os
 
-from gamecov import Frame, FrameCoverage, FrameMonitor
-from gamecov.frame_cov import BK_FrameMonitor
+from gamecov import FrameCoverage, FrameMonitor, BK_FrameMonitor
 import gamecov.generator as cg
 from gamecov.writer import write_mp4
 
