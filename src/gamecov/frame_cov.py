@@ -122,7 +122,7 @@ class _BKTree:
 # > N_MAX=500 uv run pytest tests/test_monotone.py --durations=0
 # 236.71s call     tests/test_monotone.py::test_monotone
 # 186.90s call     tests/test_monotone.py::test_monotone_BK
-class BK_FrameMonitor(FrameMonitor):
+class BKFrameMonitor(FrameMonitor):
     def __init__(self, radius: int = RADIUS):
         """FrameMonitor implemented using BK Tree
         For long videos with many frames,

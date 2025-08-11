@@ -1,7 +1,7 @@
 import tempfile
 import os
 
-from gamecov import FrameCoverage, FrameMonitor, BK_FrameMonitor
+from gamecov import FrameCoverage, FrameMonitor, BKFrameMonitor
 import gamecov.generator as cg
 from gamecov.writer import write_mp4
 
@@ -45,7 +45,7 @@ def test_monotone(data, n):
 )
 @given(data=st.data(), n=st.integers(min_value=1, max_value=N_MAX))
 def test_monotone_BK(data, n):
-    monitor = BK_FrameMonitor()
+    monitor = BKFrameMonitor()
     prev_cov = 0
     created_files = []
     for _ in range(n):

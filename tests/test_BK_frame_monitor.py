@@ -3,7 +3,7 @@ import os
 
 from hypothesis import given, settings, strategies as st
 
-from gamecov import FrameCoverage, FrameMonitor, BK_FrameMonitor
+from gamecov import FrameCoverage, FrameMonitor, BKFrameMonitor
 import gamecov.generator as cg
 from gamecov.writer import write_mp4
 
@@ -12,7 +12,7 @@ from gamecov.writer import write_mp4
 @given(data=st.data(), n=st.integers(min_value=1, max_value=100))
 def test_monitor_diff(data, n):
     base_monitor = FrameMonitor()
-    bk_monitor = BK_FrameMonitor()
+    bk_monitor = BKFrameMonitor()
     created_files = []
     for _ in range(n):
         frames = data.draw(cg.frames_lists)

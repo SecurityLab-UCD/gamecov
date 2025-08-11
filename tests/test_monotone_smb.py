@@ -1,5 +1,5 @@
 import os
-from gamecov import FrameCoverage, FrameMonitor, BK_FrameMonitor
+from gamecov import FrameCoverage, FrameMonitor, BKFrameMonitor
 import pytest
 
 
@@ -14,7 +14,7 @@ def test_smb_monotone_BK():
     # sort mp4 files of file name
     mp4_files.sort()
 
-    monitor = BK_FrameMonitor()
+    monitor = BKFrameMonitor()
     prev_cov = 0
 
     for f in mp4_files:

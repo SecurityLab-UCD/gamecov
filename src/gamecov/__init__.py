@@ -1,7 +1,7 @@
 from .loader import load_mp4, load_mp4_lazy
 from .dedup import dedup_unique_frames
 from .frame import Frame
-from .frame_cov import FrameCoverage, FrameMonitor, get_frame_cov, BK_FrameMonitor
+from .frame_cov import FrameCoverage, FrameMonitor, get_frame_cov, BKFrameMonitor
 from .stitch import stitch_images
 from .cov_base import CoverageItem, Coverage, CoverageMonitor
 
@@ -17,5 +17,5 @@ __all__ = [
     "CoverageItem",
     "Coverage",
     "CoverageMonitor",
-    "BK_FrameMonitor",
+    "BKFrameMonitor",
 ]
