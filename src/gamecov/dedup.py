@@ -5,13 +5,25 @@ from typing import Iterable
 import cv2
 import numpy as np
 import imagehash
+from imagehash import ImageHash
 from skimage import metrics as skm
+from deprecated import deprecated
 
 from .frame import Frame
+from .env import RADIUS
+
+
+def is_dup(
+    img_hash_1: ImageHash, img_hash_2: ImageHash, threshold: int = RADIUS
+) -> bool:
+    """Hamming distance.
+    Check if two image hashes are duplicates based on a threshold.
+    """
+    return abs(img_hash_1 - img_hash_2) <= threshold
 
 
 def dedup_unique_frames(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
 ) -> set[Frame]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
@@ -24,7 +36,7 @@ def dedup_unique_frames(
     Returns:
         List of unique images
     """
-    unique_images: dict[imagehash.ImageHash, Frame] = {}
+    unique_images: dict[ImageHash, Frame] = {}
 
     for f in frames:
         # perceptual hash
@@ -33,7 +45,7 @@ def dedup_unique_frames(
         # Check if similar image already exists
         is_duplicate = False
         for existing_hash in unique_images:
-            if abs(img_hash - existing_hash) <= threshold:  # Hamming distance
+            if is_dup(img_hash, existing_hash, threshold):
                 is_duplicate = True
                 break
         if not is_duplicate:
@@ -44,8 +56,8 @@ def dedup_unique_frames(
 
 
 def dedup_unique_hashes(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
-) -> set[imagehash.ImageHash]:
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
+) -> set[ImageHash]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
 
@@ -57,7 +69,7 @@ def dedup_unique_hashes(
     Returns:
         List of unique images
     """
-    unique_images: set[imagehash.ImageHash] = set()
+    unique_images: set[ImageHash] = set()
 
     for f in frames:
         # perceptual hash
@@ -66,7 +78,7 @@ def dedup_unique_hashes(
         # Check if similar image already exists
         is_duplicate = False
         for existing_hash in unique_images:
-            if abs(img_hash - existing_hash) <= threshold:  # Hamming distance
+            if is_dup(img_hash, existing_hash, threshold):
                 is_duplicate = True
                 break
         if not is_duplicate:
@@ -76,6 +88,7 @@ def dedup_unique_hashes(
     return unique_images
 
 
+@deprecated("Too slow to use in fuzzing.")
 def ssim_dedup(frames: Iterable[Frame], threshold: float = 0.95) -> set[Frame]:
     """
     SSIM (Structural Similarity Index) for duplicate detection.

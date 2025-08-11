@@ -1,12 +1,13 @@
 [project]
 name = "gamecov"
-version = "0.1.4"
+version = "0.1.5"
 description = "Coverage monitoring for directed game play-testing (Game-Fuzz)"
 readme = "README.md"
 authors = [{ name = "Yifeng He", email = "yfhe.prsn@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "av>=15.0.0",
+    "deprecated>=1.2.18",
     "fire>=0.7.0",
     "hypothesis>=6.136.7",
     "imagehash>=4.3.2",
@@ -19,6 +20,7 @@ dependencies = [
     "returns[compatible-mypy]>=0.25.0",
     "scikit-image>=0.25.2",
     "stitching==0.6.1",
+    "types-deprecated>=1.2.15.20250304",
 ]
 
 [build-system]
@@ -41,6 +43,7 @@ disable = [
     "subprocess-run-check",
     "too-many-instance-attributes",
     "missing-module-docstring",
+    "unnecessary-ellipsis",          # pylint cannot work with typed Protocol
 ]
 fail-under = 9
 [tool.pylint.typecheck]

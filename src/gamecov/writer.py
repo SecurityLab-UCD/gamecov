@@ -6,14 +6,20 @@ from .frame import Frame
 
 
 def write_mp4(frames: list[Frame], output_path: str) -> None:
-    """Write a list of Frames to an MP4 file."""
+    """Write a list of Frames to an MP4 file using imageio(ffmpeg).
+    WARNING: ffmpeg crop the resolution ratio of frames.
+    """
     # convert Frames to numpy arrays
     arrays = [np.array(frame.img) for frame in frames]
     iio.imwrite(output_path, arrays, extension=".mp4")
 
 
 def write_mp4_cv2(frames: list[Frame], output_path: str, fps: float = 24.0) -> None:
-
+    """write frames to mp4 using OpenCV.
+    WARNING: OpenCV preserve the original resolution of frames,
+    but changes the color scheme (COLOR_RGB2BGR).
+    Therefore, the frames's exact pixel value may differ from the original.
+    """
     # Get the dimensions from the first frame
     height, width, _ = np.array(frames[0].img).shape
 
