@@ -46,6 +46,11 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
 
         # O(N*M) but correct and fast in pure Python
         for img_hash in cov.coverage:
+            # skip exact-same frames
+            # smb test: 144.24ms -> 141.32ms
+            if img_hash in self.item_seen:
+                continue
+            # generator with `any` can short-circuit
             if not any(is_dup(img_hash, h) for h in self.item_seen):
                 self.item_seen.add(img_hash)
 
