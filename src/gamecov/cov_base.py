@@ -1,4 +1,5 @@
 from typing import Protocol, TypeVar, runtime_checkable
+from dataclasses import field
 
 
 @runtime_checkable
@@ -36,8 +37,8 @@ class Coverage(Protocol[T]):
 class CoverageMonitor(Protocol[T]):
     """Abstract base class for coverage monitors."""
 
-    path_seen: set[str] = set()
-    item_seen: set[T] = set()
+    path_seen: set[str] = field(default_factory=set)
+    item_seen: set[T] = field(default_factory=set)
 
     def is_seen(self, cov: Coverage[T]) -> bool:
         """Check if the coverage has been seen."""
