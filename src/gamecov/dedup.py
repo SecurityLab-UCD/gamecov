@@ -10,9 +10,12 @@ from skimage import metrics as skm
 from deprecated import deprecated
 
 from .frame import Frame
+from .env import RADIUS
 
 
-def is_dup(img_hash_1: ImageHash, img_hash_2: ImageHash, threshold: int = 5) -> bool:
+def is_dup(
+    img_hash_1: ImageHash, img_hash_2: ImageHash, threshold: int = RADIUS
+) -> bool:
     """Hamming distance.
     Check if two image hashes are duplicates based on a threshold.
     """
@@ -20,7 +23,7 @@ def is_dup(img_hash_1: ImageHash, img_hash_2: ImageHash, threshold: int = 5) -> 
 
 
 def dedup_unique_frames(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
 ) -> set[Frame]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
@@ -53,7 +56,7 @@ def dedup_unique_frames(
 
 
 def dedup_unique_hashes(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = 5
+    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
 ) -> set[ImageHash]:
     """
     Remove duplicate or very similar frames using perceptual hashing.

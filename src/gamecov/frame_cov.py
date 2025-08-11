@@ -8,6 +8,7 @@ import numpy as np
 from .dedup import dedup_unique_hashes, is_dup
 from .cov_base import Coverage, CoverageMonitor
 from .loader import load_mp4, load_mp4_lazy
+from .env import RADIUS
 
 
 class FrameCoverage:
@@ -53,7 +54,7 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
             if img_hash in self.item_seen:
                 continue
             # generator with `any` can short-circuit
-            if not any(is_dup(img_hash, h) for h in self.item_seen):
+            if not any(is_dup(img_hash, h, threshold=RADIUS) for h in self.item_seen):
                 self.item_seen.add(img_hash)
 
 
@@ -122,15 +123,15 @@ class _BKTree:
 # 236.71s call     tests/test_monotone.py::test_monotone
 # 186.90s call     tests/test_monotone.py::test_monotone_BK
 class BK_FrameMonitor(FrameMonitor):
-    def __init__(self):
+    def __init__(self, radius: int = RADIUS):
         """FrameMonitor implemented using BK Tree
         For long videos with many frames,
         this implementation speed up the process of checking frame coverage significantly.
         """
         FrameMonitor.__init__(self)
         self._bktree = _BKTree()
-        self._exact_bytes = set()
-        self.R = 5
+        self._exact_bytes: set[bytes] = set()
+        self.radius = radius
 
     def add_cov(self, cov: Coverage[ImageHash]) -> None:
         self.path_seen.add(cov.path_id)
@@ -143,7 +144,7 @@ class BK_FrameMonitor(FrameMonitor):
                 continue
 
             x = int.from_bytes(hash_bytes, "big")
-            if not self._bktree.any_within(x, self.R):  # prune most candidates
+            if not self._bktree.any_within(x, self.radius):  # prune most candidates
                 self._bktree.add(x)
                 self._exact_bytes.add(hash_bytes)
                 self.item_seen.add(img_hash)
