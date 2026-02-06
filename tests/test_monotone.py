@@ -45,8 +45,14 @@ def test_monotone(data, n):
 )
 @given(data=st.data(), n=st.integers(min_value=1, max_value=N_MAX))
 def test_monotone_BK(data, n):
+    """len(item_seen) (total distinct hashes) is always monotonic.
+
+    Note: monitor.coverage_count (connected components) may decrease when
+    a bridging hash merges two clusters.  That is correct semantics for
+    order-independent coverage and is NOT tested for monotonicity here.
+    """
     monitor = BKFrameMonitor()
-    prev_cov = 0
+    prev_item_count = 0
     created_files = []
     for _ in range(n):
         frames = data.draw(cg.frames_lists)
@@ -59,8 +65,10 @@ def test_monotone_BK(data, n):
             if not monitor.is_seen(cov):
                 monitor.add_cov(cov)
 
-            assert len(monitor.item_seen) >= prev_cov, "Coverage should not decrease"
-            prev_cov = len(monitor.item_seen)
+            assert len(monitor.item_seen) >= prev_item_count, (
+                "item_seen count should not decrease"
+            )
+            prev_item_count = len(monitor.item_seen)
 
     # Clean up temporary files
     for f in created_files:

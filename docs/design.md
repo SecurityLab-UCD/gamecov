@@ -18,9 +18,10 @@
 
 Frame coverage (`FrameCoverage`, `FrameMonitor`, `BKFrameMonitor`) is the first concrete implementation. The framework is designed to support future metrics such as audio coverage or state-graph coverage with no changes to the monitoring interface.
 
-### Key Invariant
+### Key Invariants
 
-Coverage is **monotonically non-decreasing** — `add_cov()` can only grow `item_seen`, never shrink it. This property is verified by the `test_monotone*` test suite.
+- `len(item_seen)` is **monotonically non-decreasing** — `add_cov()` can only grow the set of distinct hashes, never shrink it. This property is verified by the `test_monotone*` test suite.
+- `coverage_count` (connected-component count, `BKFrameMonitor` only) is **order-independent**: the same set of hashes always produces the same count regardless of insertion order. It may transiently decrease when a bridging hash merges two clusters.
 
 ## Frame Coverage
 
@@ -73,6 +74,21 @@ The naive `FrameMonitor` checks each new hash against all previously seen hashes
 1. Each image hash is packed into an integer via `numpy.packbits`.
 2. The BK-tree stores these integers. Distances are computed with `(x ^ y).bit_count()` (popcount = Hamming distance).
 3. On lookup, the triangle inequality prunes branches: for a query point *x* with radius *r* at a node with distance *d*, only children with keys in [d-r, d+r] need to be visited.
+
+### Order-Independent Coverage via Union-Find
+
+The greedy first-seen-wins dedup in `FrameMonitor` is **order-dependent**: processing the same recordings in different orders can yield different coverage counts (because the "is duplicate" relation is not transitive).
+
+`BKFrameMonitor` solves this with a union-find (disjoint-set) structure:
+
+1. **Every** distinct hash is inserted into the BK-tree (no greedy skip).
+2. On insertion, `find_all_within(x, radius)` locates all existing neighbours.
+3. The new hash is unioned with every neighbour in the union-find.
+4. `coverage_count` = number of connected components = number of disjoint clusters.
+
+Because the Hamming-distance graph depends only on which hashes exist (not insertion order), the connected-component count is fully order-independent.
+
+**Trade-off**: `coverage_count` may transiently *decrease* when a new hash bridges two previously separate components. `len(item_seen)` (total distinct hashes) remains monotonically non-decreasing.
 
 ### Performance
 

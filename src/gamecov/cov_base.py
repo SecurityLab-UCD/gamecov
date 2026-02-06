@@ -48,6 +48,16 @@ class CoverageMonitor(ABC, Generic[T]):
     def add_cov(self, cov: Coverage[T]) -> None:
         """Add a new execution coverage record to the monitor."""
 
+    @property
+    def coverage_count(self) -> int:
+        """Number of unique coverage items.
+
+        The default implementation returns ``len(self.item_seen)``.
+        Subclasses may override to provide order-independent metrics
+        (e.g., connected-component count via union-find).
+        """
+        return len(self.item_seen)
+
     def reset(self) -> None:
         """Reset the monitor state."""
         self.path_seen.clear()

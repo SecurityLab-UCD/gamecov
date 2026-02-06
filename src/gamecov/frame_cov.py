@@ -156,25 +156,90 @@ class _BKTree:
                     stack.append(child)
         return False
 
+    def find_all_within(self, x: int, r: int) -> list[int]:
+        """Return all values in the tree within Hamming distance r of x."""
+        if self.root is None:
+            return []
+        results: list[int] = []
+        stack = [self.root]
+        while stack:
+            n = stack.pop()
+            d = (x ^ n.val).bit_count()
+            if d <= r:
+                results.append(n.val)
+            lo, hi = d - r, d + r
+            for dd, child in n.children.items():
+                if lo <= dd <= hi:
+                    stack.append(child)
+        return results
+
+
+class _UnionFind:
+    """Disjoint-set (union-find) with path splitting and union by rank."""
+
+    def __init__(self) -> None:
+        self._parent: dict[int, int] = {}
+        self._rank: dict[int, int] = {}
+        self._count: int = 0
+
+    def make_set(self, x: int) -> None:
+        if x not in self._parent:
+            self._parent[x] = x
+            self._rank[x] = 0
+            self._count += 1
+
+    def find(self, x: int) -> int:
+        while self._parent[x] != x:
+            self._parent[x] = self._parent[self._parent[x]]  # path splitting
+            x = self._parent[x]
+        return x
+
+    def union(self, a: int, b: int) -> None:
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb:
+            return
+        if self._rank[ra] < self._rank[rb]:
+            ra, rb = rb, ra
+        self._parent[rb] = ra
+        if self._rank[ra] == self._rank[rb]:
+            self._rank[ra] += 1
+        self._count -= 1
+
+    @property
+    def component_count(self) -> int:
+        return self._count
+
 
 # > N_MAX=500 uv run pytest tests/test_monotone.py --durations=0
 # 236.71s call     tests/test_monotone.py::test_monotone
 # 186.90s call     tests/test_monotone.py::test_monotone_BK
 class BKFrameMonitor(FrameMonitor):
-    """FrameMonitor implemented using BK Tree
-    For long videos with many frames,
-    this implementation speed up the process of checking frame coverage significantly.
+    """FrameMonitor backed by a BK-tree and union-find for order-independent coverage.
+
+    Coverage is measured as the number of connected components in the
+    Hamming-distance neighbourhood graph (distance <= radius).  Unlike the
+    greedy first-seen-wins approach, this metric is **order-independent**:
+    the same set of hashes always produces the same coverage count regardless
+    of insertion order.
+
+    Note: ``coverage_count`` may transiently *decrease* when a newly inserted
+    hash bridges two previously separate components.  ``len(item_seen)``
+    (total distinct hashes) remains monotonically non-decreasing.
     """
 
     def __init__(self, radius: int = RADIUS):
         super().__init__()
         self._bktree = _BKTree()
         self._exact_bytes: set[bytes] = set()
+        self._uf = _UnionFind()
         self.radius = radius
 
     def add_cov(self, cov: Coverage[ImageHash]) -> None:
-        """add coverage to the current set.
-        The deduplication by Hamming distance is managed by a BK-tree.
+        """Add coverage to the current set.
+
+        Every distinct hash is inserted into the BK-tree and unioned with all
+        its neighbours within ``self.radius``.  Coverage is the number of
+        connected components in the resulting union-find structure.
         """
         self.path_seen.add(cov.path_id)
         for img_hash in cov.coverage:
@@ -182,11 +247,28 @@ class BKFrameMonitor(FrameMonitor):
                 np.asarray(img_hash.hash, dtype=np.uint8),
                 bitorder="big",
             ).tobytes()
-            if hash_bytes in self._exact_bytes:  # exact dup
+            if hash_bytes in self._exact_bytes:
                 continue
 
             x = int.from_bytes(hash_bytes, "big")
-            if not self._bktree.any_within(x, self.radius):  # prune most candidates
-                self._bktree.add(x)
-                self._exact_bytes.add(hash_bytes)
-                self.item_seen.add(img_hash)
+            neighbors = self._bktree.find_all_within(x, self.radius)
+
+            self._uf.make_set(x)
+            for nb in neighbors:
+                self._uf.union(x, nb)
+
+            self._bktree.add(x)
+            self._exact_bytes.add(hash_bytes)
+            self.item_seen.add(img_hash)
+
+    @property
+    def coverage_count(self) -> int:
+        """Order-independent coverage: number of connected components."""
+        return self._uf.component_count
+
+    def reset(self) -> None:
+        """Reset all monitor state including BK-tree and union-find."""
+        super().reset()
+        self._bktree = _BKTree()
+        self._exact_bytes.clear()
+        self._uf = _UnionFind()
