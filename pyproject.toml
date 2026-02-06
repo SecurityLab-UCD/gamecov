@@ -72,7 +72,14 @@ plugins = ["returns.contrib.mypy.returns_plugin"]
 # pytest_plugins = ['pytest_profiling']
 
 [dependency-groups]
-dev = ["pytest-cov>=6.2.1", "pytest-profiling>=1.8.1", "pytest-xdist>=3.8.0"]
+dev = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.5.1",
+    "pytest-cov>=6.2.1",
+    "pytest-profiling>=1.8.1",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.15.0",
+]
 
 [tool.ruff]
 exclude = ["tests/"]
