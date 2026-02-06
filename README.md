@@ -25,9 +25,29 @@ Two frames are considered duplicates if the Hamming distance between their perce
 
 ## Installation
 
-Requires Python >= 3.11. Install with [uv](https://docs.astral.sh/uv/):
+Requires Python >= 3.11.
+
+### As a package
+
+Install directly from GitHub with [uv](https://docs.astral.sh/uv/):
 
 ```bash
+uv add git+https://github.com/SecurityLab-UCD/gamecov.git
+```
+
+Or with pip:
+
+```bash
+pip install git+https://github.com/SecurityLab-UCD/gamecov.git
+```
+
+### For development
+
+Clone the repo and sync dependencies:
+
+```bash
+git clone https://github.com/SecurityLab-UCD/gamecov.git
+cd gamecov
 uv sync
 ```
 
