@@ -1,6 +1,6 @@
 import fire
 
-from gamecov import load_mp4, dedup_unique_frames
+from gamecov import dedup_unique_frames, load_mp4
 from gamecov.stitch import stitch_images
 
 

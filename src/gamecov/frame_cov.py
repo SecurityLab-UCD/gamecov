@@ -1,15 +1,15 @@
 import hashlib
 from dataclasses import dataclass, field
 
-from returns.result import safe
-from imagehash import ImageHash
 import imagehash
 import numpy as np
+from imagehash import ImageHash
+from returns.result import safe
 
-from .dedup import dedup_unique_hashes, is_dup
 from .cov_base import Coverage, CoverageMonitor
-from .loader import load_mp4, load_mp4_lazy
+from .dedup import dedup_unique_hashes, is_dup
 from .env import RADIUS
+from .loader import load_mp4, load_mp4_lazy
 
 
 class FrameCoverage:

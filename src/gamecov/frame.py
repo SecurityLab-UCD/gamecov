@@ -1,9 +1,9 @@
+import base64
 from dataclasses import dataclass
 from io import BytesIO
-import base64
 
-from PIL import Image
 import imagehash
+from PIL import Image
 
 
 def encode_image(img: Image.Image) -> str:

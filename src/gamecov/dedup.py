@@ -3,14 +3,14 @@
 from typing import Iterable
 
 import cv2
-import numpy as np
 import imagehash
+import numpy as np
+from deprecated import deprecated
 from imagehash import ImageHash
 from skimage import metrics as skm
-from deprecated import deprecated
 
-from .frame import Frame
 from .env import RADIUS
+from .frame import Frame
 
 
 def is_dup(
