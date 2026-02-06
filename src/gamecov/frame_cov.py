@@ -65,7 +65,14 @@ class FrameCoverage:
     @property
     def path_id(self) -> str:
         """generate a unique path ID based on the coverage"""
-        path = tuple(sorted(hash(frame) for frame in self.coverage))
+        path = tuple(
+            sorted(
+                np.packbits(
+                    np.asarray(h.hash, dtype=np.uint8), bitorder="big"
+                ).tobytes()
+                for h in self.coverage
+            )
+        )
         return hashlib.sha1(str(path).encode()).hexdigest()
 
 
