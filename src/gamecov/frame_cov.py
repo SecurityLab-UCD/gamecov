@@ -1,7 +1,6 @@
 import hashlib
 from dataclasses import dataclass, field
 
-import imagehash
 import numpy as np
 from imagehash import ImageHash
 from returns.result import safe
@@ -9,22 +8,28 @@ from returns.result import safe
 from .cov_base import Coverage, CoverageMonitor
 from .dedup import dedup_unique_hashes, is_dup
 from .env import RADIUS
+from .frame import HashMethod, compute_hash
 from .loader import load_mp4, load_mp4_lazy
 
 
 class FrameCoverage:
     """track frame coverage in a game-play session"""
 
-    def __init__(self, recording_path: str):
+    def __init__(self, recording_path: str, hash_method: HashMethod = "phash"):
         self.recording_path = recording_path
-        self.unique_frames = dedup_unique_hashes(load_mp4_lazy(recording_path))
+        self.hash_method: HashMethod = hash_method
+        self.unique_frames = dedup_unique_hashes(
+            load_mp4_lazy(recording_path), hash_method=hash_method
+        )
 
     @property
     def trace(self) -> list[ImageHash]:
         """Note: this function is lazy, loading the frames AGAIN from the recording path.
         You should not call this function if you already have the frames loaded.
         """
-        return [imagehash.phash(f.img) for f in load_mp4(self.recording_path)]
+        return [
+            compute_hash(f.img, self.hash_method) for f in load_mp4(self.recording_path)
+        ]
 
     @property
     def coverage(self) -> set[ImageHash]:
@@ -61,9 +66,9 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
 
 
 @safe
-def get_frame_cov(url: str) -> FrameCoverage:
+def get_frame_cov(url: str, hash_method: HashMethod = "phash") -> FrameCoverage:
     """Get the frame coverage for a given MP4 file."""
-    return FrameCoverage(url)
+    return FrameCoverage(url, hash_method=hash_method)
 
 
 @dataclass

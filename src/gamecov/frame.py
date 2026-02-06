@@ -1,9 +1,23 @@
 import base64
 from dataclasses import dataclass
 from io import BytesIO
+from typing import Callable, Literal
 
 import imagehash
+from imagehash import ImageHash
 from PIL import Image
+
+HashMethod = Literal["ahash", "phash"]
+
+_HASH_FUNCTIONS: dict[HashMethod, Callable[..., ImageHash]] = {
+    "ahash": imagehash.average_hash,
+    "phash": imagehash.phash,
+}
+
+
+def compute_hash(img: Image.Image, method: HashMethod = "phash") -> ImageHash:
+    """Compute a perceptual hash of a PIL Image using the specified method."""
+    return _HASH_FUNCTIONS[method](img)
 
 
 def encode_image(img: Image.Image) -> str:
@@ -19,17 +33,18 @@ def encode_image(img: Image.Image) -> str:
 
 @dataclass
 class Frame:
-    """wrapper for PIL Image with average hash."""
+    """wrapper for PIL Image with perceptual hash."""
 
     img: Image.Image
+    hash_method: HashMethod = "phash"
 
-    def __hash__(self):
-        return hash(imagehash.average_hash(self.img))
+    def __hash__(self) -> int:
+        return hash(compute_hash(self.img, self.hash_method))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return encode_image(self.img)
 
     @classmethod
-    def fromarray(cls, array) -> "Frame":
+    def fromarray(cls, array, hash_method: HashMethod = "phash") -> "Frame":
         """Create a Frame from a numpy array."""
-        return cls(img=Image.fromarray(array))
+        return cls(img=Image.fromarray(array), hash_method=hash_method)
