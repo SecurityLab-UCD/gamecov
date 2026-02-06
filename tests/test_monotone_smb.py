@@ -4,6 +4,7 @@ import pytest
 
 
 def test_smb_monotone_BK():
+    """item_seen count is monotonic; coverage_count (components) may dip on bridges."""
     assets_dir = os.path.abspath("assets/smb")
 
     if not os.path.exists(assets_dir):
@@ -15,7 +16,7 @@ def test_smb_monotone_BK():
     mp4_files.sort()
 
     monitor = BKFrameMonitor()
-    prev_cov = 0
+    prev_item_count = 0
 
     for f in mp4_files:
         f = os.path.join(assets_dir, f)
@@ -23,8 +24,10 @@ def test_smb_monotone_BK():
         if not monitor.is_seen(cov):
             monitor.add_cov(cov)
 
-        assert len(monitor.item_seen) >= prev_cov, "Coverage should not decrease"
-        prev_cov = len(monitor.item_seen)
+        assert len(monitor.item_seen) >= prev_item_count, (
+            "item_seen count should not decrease"
+        )
+        prev_item_count = len(monitor.item_seen)
 
 
 def test_smb_monotone():

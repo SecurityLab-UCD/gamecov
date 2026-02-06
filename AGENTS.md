@@ -20,7 +20,7 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │       ├── cov_base.py          # Abstract protocols: CoverageItem, Coverage, CoverageMonitor
 │       ├── frame.py             # Frame dataclass (PIL Image wrapper with average-hash)
 │       ├── dedup.py             # Deduplication algorithms (pHash, SSIM [deprecated])
-│       ├── frame_cov.py         # FrameCoverage, FrameMonitor, BKFrameMonitor, BK-tree
+│       ├── frame_cov.py         # FrameCoverage, FrameMonitor, BKFrameMonitor, BK-tree, UnionFind
 │       ├── loader.py            # MP4 loading: bulk, lazy (generator), last-n
 │       ├── writer.py            # MP4 writing: imageio and OpenCV backends
 │       ├── stitch.py            # Panorama stitching of unique frames
@@ -59,7 +59,7 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `cov_base.py` | `CoverageItem`, `Coverage[T]`, `CoverageMonitor[T]` protocols/ABC |
 | `frame.py` | `Frame` dataclass (PIL Image + average-hash) |
 | `dedup.py` | `is_dup()`, `dedup_unique_frames()`, `dedup_unique_hashes()`, `ssim_dedup()` [deprecated] |
-| `frame_cov.py` | `FrameCoverage`, `FrameMonitor`, `BKFrameMonitor`, `get_frame_cov()` |
+| `frame_cov.py` | `FrameCoverage`, `FrameMonitor`, `BKFrameMonitor`, `get_frame_cov()`, `_UnionFind`, `_BKTree` |
 | `loader.py` | `load_mp4()`, `load_mp4_lazy()`, `load_mp4_last_n()` |
 | `writer.py` | `write_mp4()`, `write_mp4_cv2()` |
 | `stitch.py` | `stitch_images()` (panorama via AffineStitcher) |
