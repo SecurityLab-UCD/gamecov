@@ -1,6 +1,6 @@
 [project]
 name = "gamecov"
-version = "0.1.5"
+version = "0.1.6"
 description = "Coverage monitoring for directed game play-testing (Game-Fuzz)"
 readme = "README.md"
 authors = [{ name = "Yifeng He", email = "yfhe.prsn@gmail.com" }]
@@ -8,7 +8,6 @@ requires-python = ">=3.11"
 dependencies = [
     "av>=15.0.0",
     "deprecated>=1.2.18",
-    "fire>=0.7.0",
     "hypothesis>=6.136.7",
     "imagehash>=4.3.2",
     "imageio[ffmpeg]>=2.37.0",
@@ -20,6 +19,7 @@ dependencies = [
     "returns[compatible-mypy]>=0.25.0",
     "scikit-image>=0.25.2",
     "stitching==0.6.1",
+    "typer-slim>=0.21.1",
     "types-deprecated>=1.2.15.20250304",
 ]
 
@@ -72,7 +72,14 @@ plugins = ["returns.contrib.mypy.returns_plugin"]
 # pytest_plugins = ['pytest_profiling']
 
 [dependency-groups]
-dev = ["pytest-cov>=6.2.1", "pytest-profiling>=1.8.1", "pytest-xdist>=3.8.0"]
+dev = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.5.1",
+    "pytest-cov>=6.2.1",
+    "pytest-profiling>=1.8.1",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.15.0",
+]
 
 [tool.ruff]
 exclude = ["tests/"]

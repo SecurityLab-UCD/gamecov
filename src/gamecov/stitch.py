@@ -1,10 +1,10 @@
 from typing import Iterable
 
-from PIL import Image
-from stitching import AffineStitcher
+import cv2
 import numpy as np
 import numpy.typing as npt
-import cv2
+from PIL import Image
+from stitching import AffineStitcher
 
 from .frame import Frame
 

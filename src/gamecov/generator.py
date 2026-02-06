@@ -1,7 +1,7 @@
-from hypothesis import strategies as st
-from hypothesis.strategies import composite
 import hypothesis.extra.numpy as hnp
 import numpy as np
+from hypothesis import strategies as st
+from hypothesis.strategies import composite
 
 from .frame import Frame
 

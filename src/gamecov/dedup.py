@@ -4,13 +4,12 @@ from typing import Iterable
 
 import cv2
 import numpy as np
-import imagehash
+from deprecated import deprecated
 from imagehash import ImageHash
 from skimage import metrics as skm
-from deprecated import deprecated
 
-from .frame import Frame
 from .env import RADIUS
+from .frame import Frame, HashMethod, compute_hash
 
 
 def is_dup(
@@ -23,24 +22,25 @@ def is_dup(
 
 
 def dedup_unique_frames(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
+    frames: Iterable[Frame],
+    threshold: int = RADIUS,
+    hash_method: HashMethod = "phash",
 ) -> set[Frame]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
 
     Args:
-        images: List of PIL Image objects
-        hash_size: Size of the hash (larger = more precise)
+        frames: Iterable of Frame objects
         threshold: Maximum hamming distance to consider images as duplicates
+        hash_method: Hash algorithm to use ("ahash" or "phash")
 
     Returns:
-        List of unique images
+        Set of unique frames
     """
     unique_images: dict[ImageHash, Frame] = {}
 
     for f in frames:
-        # perceptual hash
-        img_hash = imagehash.phash(f.img, hash_size=hash_size)
+        img_hash = compute_hash(f.img, hash_method)
 
         # Check if similar image already exists
         is_duplicate = False
@@ -51,29 +51,29 @@ def dedup_unique_frames(
         if not is_duplicate:
             unique_images[img_hash] = f
 
-    # Return frames in original order
     return set(unique_images.values())
 
 
 def dedup_unique_hashes(
-    frames: Iterable[Frame], hash_size: int = 8, threshold: int = RADIUS
+    frames: Iterable[Frame],
+    threshold: int = RADIUS,
+    hash_method: HashMethod = "phash",
 ) -> set[ImageHash]:
     """
     Remove duplicate or very similar frames using perceptual hashing.
 
     Args:
-        images: List of PIL Image objects
-        hash_size: Size of the hash (larger = more precise)
+        frames: Iterable of Frame objects
         threshold: Maximum hamming distance to consider images as duplicates
+        hash_method: Hash algorithm to use ("ahash" or "phash")
 
     Returns:
-        List of unique images
+        Set of unique image hashes
     """
     unique_images: set[ImageHash] = set()
 
     for f in frames:
-        # perceptual hash
-        img_hash = imagehash.phash(f.img, hash_size=hash_size)
+        img_hash = compute_hash(f.img, hash_method)
 
         # Check if similar image already exists
         is_duplicate = False
@@ -84,7 +84,6 @@ def dedup_unique_hashes(
         if not is_duplicate:
             unique_images.add(img_hash)
 
-    # Return frames in original order
     return unique_images
 
 

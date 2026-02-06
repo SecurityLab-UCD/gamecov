@@ -1,6 +1,6 @@
-import numpy as np
-import imageio.v3 as iio
 import cv2
+import imageio.v3 as iio
+import numpy as np
 
 from .frame import Frame
 
