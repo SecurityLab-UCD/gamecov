@@ -1,15 +1,45 @@
 import hashlib
 from dataclasses import dataclass, field
+from typing import Iterable
 
 import numpy as np
 from imagehash import ImageHash
 from returns.result import safe
 
 from .cov_base import Coverage, CoverageMonitor
-from .dedup import dedup_unique_hashes, is_dup
+from .dedup import is_dup
 from .env import RADIUS
-from .frame import HashMethod, compute_hash
-from .loader import load_mp4, load_mp4_lazy
+from .frame import Frame, HashMethod, compute_hash
+from .loader import load_mp4_lazy
+
+
+def _trace_and_unique(
+    frames: Iterable[Frame],
+    threshold: int = RADIUS,
+    hash_method: HashMethod = "phash",
+) -> tuple[list[ImageHash], set[ImageHash]]:
+    """Single-pass computation of full trace and unique hash set.
+
+    Returns:
+        (trace, unique_hashes) — the ordered list of every frame hash,
+        and the deduplicated set of unique hashes.
+    """
+    trace: list[ImageHash] = []
+    unique: set[ImageHash] = set()
+
+    for f in frames:
+        img_hash = compute_hash(f.img, hash_method)
+        trace.append(img_hash)
+
+        is_duplicate = False
+        for existing_hash in unique:
+            if is_dup(img_hash, existing_hash, threshold):
+                is_duplicate = True
+                break
+        if not is_duplicate:
+            unique.add(img_hash)
+
+    return trace, unique
 
 
 class FrameCoverage:
@@ -18,18 +48,14 @@ class FrameCoverage:
     def __init__(self, recording_path: str, hash_method: HashMethod = "phash"):
         self.recording_path = recording_path
         self.hash_method: HashMethod = hash_method
-        self.unique_frames = dedup_unique_hashes(
+        self._trace, self.unique_frames = _trace_and_unique(
             load_mp4_lazy(recording_path), hash_method=hash_method
         )
 
     @property
     def trace(self) -> list[ImageHash]:
-        """Note: this function is lazy, loading the frames AGAIN from the recording path.
-        You should not call this function if you already have the frames loaded.
-        """
-        return [
-            compute_hash(f.img, self.hash_method) for f in load_mp4(self.recording_path)
-        ]
+        """ordered list of every frame hash in the recording."""
+        return self._trace
 
     @property
     def coverage(self) -> set[ImageHash]:
