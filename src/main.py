@@ -1,4 +1,4 @@
-import fire
+import typer
 
 from gamecov import dedup_unique_frames, load_mp4
 from gamecov.stitch import stitch_images
@@ -22,4 +22,4 @@ def main(
 
 
 if __name__ == "__main__":
-    fire.Fire(main)
+    typer.run(main)
