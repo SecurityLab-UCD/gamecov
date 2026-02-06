@@ -23,7 +23,6 @@ def is_dup(
 
 def dedup_unique_frames(
     frames: Iterable[Frame],
-    hash_size: int = 8,
     threshold: int = RADIUS,
     hash_method: HashMethod = "phash",
 ) -> set[Frame]:
@@ -32,7 +31,6 @@ def dedup_unique_frames(
 
     Args:
         frames: Iterable of Frame objects
-        hash_size: Size of the hash (larger = more precise)
         threshold: Maximum hamming distance to consider images as duplicates
         hash_method: Hash algorithm to use ("ahash" or "phash")
 
@@ -58,7 +56,6 @@ def dedup_unique_frames(
 
 def dedup_unique_hashes(
     frames: Iterable[Frame],
-    hash_size: int = 8,
     threshold: int = RADIUS,
     hash_method: HashMethod = "phash",
 ) -> set[ImageHash]:
@@ -67,7 +64,6 @@ def dedup_unique_hashes(
 
     Args:
         frames: Iterable of Frame objects
-        hash_size: Size of the hash (larger = more precise)
         threshold: Maximum hamming distance to consider images as duplicates
         hash_method: Hash algorithm to use ("ahash" or "phash")
 
