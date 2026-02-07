@@ -54,8 +54,9 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   └── smb/                     # Super Smash Bros recordings for stress tests
 ├── docs/
 │   └── design.md                # Architecture and design documentation
-├── .pre-commit-config.yaml      # Pre-commit hooks
-├── .github/workflows/           # CI: pytest, mypy, ruff, pylint
+├── rustfmt.toml                 # Rust formatting config
+├── .pre-commit-config.yaml      # Pre-commit hooks (Python + Rust)
+├── .github/workflows/           # CI: pytest, mypy, ruff, pylint, rust (fmt/clippy/test)
 ├── AGENTS.md                    # This file
 └── README.md                    # Human-facing documentation
 ```
@@ -68,6 +69,8 @@ replacements for the BK-tree, union-find, and coverage tracker.
 
 Build the package (includes Rust compilation): `uv sync` or `pip install .`
 Run Rust tests independently: `cargo test`
+Check Rust formatting: `cargo fmt --all -- --check`
+Run Rust linting: `cargo clippy --all-targets --all-features -- -D warnings`
 
 ## Design
 
@@ -171,7 +174,8 @@ at the monitor level (`add_cov`/`is_seen` operations).
   Local variables' types are optional as long as the types can be easily inferred.
 - Use f-strings for string interpolation.
 - Use `TypedDict`, `Literal`, `Protocol`, and `TypeVar` from `typing` module when appropriate.
-- Always run `mypy`, and `ruff` to ensure code quality after updating code in `src/`.
+- Always run `mypy` and `ruff` to ensure code quality after updating Python code in `src/`.
+- Always run `cargo fmt`, `cargo clippy -- -D warnings`, and `cargo test` after updating Rust code in `src/`.
 - Never commit changes or create PRs. Suggest commit messages to the human developer for review after your changes to the codebase.
 - Always use `typer` to handle CLI commands.
 
