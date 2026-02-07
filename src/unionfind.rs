@@ -13,6 +13,12 @@ pub struct UnionFindInner {
     count: usize,
 }
 
+impl Default for UnionFindInner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl UnionFindInner {
     pub fn new() -> Self {
         Self {

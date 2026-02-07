@@ -18,6 +18,12 @@ pub fn hamming(a: u64, b: u64) -> u32 {
     (a ^ b).count_ones()
 }
 
+impl Default for BKTreeInner {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BKTreeInner {
     pub fn new() -> Self {
         Self { nodes: Vec::new() }
