@@ -135,6 +135,16 @@ uv run pytest -n auto --cov=gamecov
 cargo test
 ```
 
+### Benchmarks
+
+```bash
+# Compare Python vs Rust monitor throughput
+uv run pytest benchmarks/ --benchmark-enable
+
+# Side-by-side grouped by backend
+uv run pytest benchmarks/ --benchmark-enable --benchmark-group-by=param:backend
+```
+
 ### Code Quality
 
 ```bash

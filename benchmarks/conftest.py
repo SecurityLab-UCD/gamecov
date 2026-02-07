@@ -58,10 +58,15 @@ def coverages_10() -> Generator[list[FrameCoverage], None, None]:
 
 
 @pytest.fixture(scope="session")
-def coverages_25() -> Generator[list[FrameCoverage], None, None]:
-    yield from _generate_coverages(25)
+def coverages_50() -> Generator[list[FrameCoverage], None, None]:
+    yield from _generate_coverages(50)
 
 
 @pytest.fixture(scope="session")
-def coverages_50() -> Generator[list[FrameCoverage], None, None]:
-    yield from _generate_coverages(50)
+def coverages_200() -> Generator[list[FrameCoverage], None, None]:
+    yield from _generate_coverages(200)
+
+
+@pytest.fixture(scope="session")
+def coverages_500() -> Generator[list[FrameCoverage], None, None]:
+    yield from _generate_coverages(500)

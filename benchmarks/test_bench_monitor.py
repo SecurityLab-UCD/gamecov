@@ -58,16 +58,6 @@ class TestMonitorBenchmark:
         result = benchmark(_run_monitor, self._factory(backend), coverages_10)
         assert result > 0
 
-    def test_add_cov_25(
-        self,
-        benchmark: BenchmarkFixture,
-        backend: str,
-        coverages_25: list[FrameCoverage],
-    ) -> None:
-        """Benchmark add_cov with 25 recordings."""
-        result = benchmark(_run_monitor, self._factory(backend), coverages_25)
-        assert result > 0
-
     def test_add_cov_50(
         self,
         benchmark: BenchmarkFixture,
@@ -76,4 +66,24 @@ class TestMonitorBenchmark:
     ) -> None:
         """Benchmark add_cov with 50 recordings."""
         result = benchmark(_run_monitor, self._factory(backend), coverages_50)
+        assert result > 0
+
+    def test_add_cov_200(
+        self,
+        benchmark: BenchmarkFixture,
+        backend: str,
+        coverages_200: list[FrameCoverage],
+    ) -> None:
+        """Benchmark add_cov with 200 recordings."""
+        result = benchmark(_run_monitor, self._factory(backend), coverages_200)
+        assert result > 0
+
+    def test_add_cov_500(
+        self,
+        benchmark: BenchmarkFixture,
+        backend: str,
+        coverages_500: list[FrameCoverage],
+    ) -> None:
+        """Benchmark add_cov with 500 recordings."""
+        result = benchmark(_run_monitor, self._factory(backend), coverages_500)
         assert result > 0
