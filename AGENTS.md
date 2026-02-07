@@ -20,7 +20,7 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │       ├── cov_base.py          # Abstract protocols: CoverageItem, Coverage, CoverageMonitor
 │       ├── frame.py             # Frame dataclass (PIL Image wrapper with average-hash)
 │       ├── dedup.py             # Deduplication algorithms (pHash, SSIM [deprecated])
-│       ├── frame_cov.py         # FrameCoverage, FrameMonitor, BKFrameMonitor, BK-tree, UnionFind
+│       ├── frame_cov.py         # FrameCoverage, FrameMonitor, BKFrameMonitor, RustBKFrameMonitor, BK-tree, UnionFind
 │       ├── loader.py            # MP4 loading: bulk, lazy (generator), last-n
 │       ├── writer.py            # MP4 writing: imageio and OpenCV backends
 │       ├── stitch.py            # Panorama stitching of unique frames
@@ -35,6 +35,7 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   ├── test_load_write_assets.py# Differential tests across loaders on real videos
 │   ├── test_monotone.py         # Coverage monotonicity (FrameMonitor & BKFrameMonitor)
 │   ├── test_BK_frame_monitor.py # Differential: FrameMonitor vs BKFrameMonitor
+│   ├── test_rust_frame_monitor.py # Differential & monotonicity: BKFrameMonitor vs RustBKFrameMonitor
 │   └── test_monotone_smb.py     # Real-world monotonicity on SMB dataset
 ├── assets/
 │   ├── videos/                  # Small sample MP4s for integration tests
@@ -48,6 +49,26 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 └── README.md                    # Human-facing documentation
 ```
 
+### gamecov-core (Rust extension)
+
+The `gamecov-core/` subdirectory contains a Rust crate (PyO3/maturin) providing
+high-performance replacements for the BK-tree, union-find, and coverage tracker.
+
+```
+gamecov-core/
+├── Cargo.toml
+├── pyproject.toml
+├── src/
+│   ├── lib.rs          # PyO3 module: BKTree, UnionFind, CoverageTracker
+│   ├── bktree.rs       # BK-tree<u64> with POPCNT Hamming distance
+│   ├── unionfind.rs    # Flat Vec-based union-find
+│   └── monitor.rs      # CoverageTracker (BK-tree + UnionFind combined)
+└── tests/
+    └── prop_tests.rs   # proptest property-based tests
+```
+
+Build with: `cd gamecov-core && maturin develop --release`
+
 ## Design
 
 See [docs/design.md](docs/design.md) for the coverage framework architecture, frame coverage pipeline, BK-tree optimization, and loading strategies.
@@ -59,7 +80,7 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `cov_base.py` | `CoverageItem`, `Coverage[T]`, `CoverageMonitor[T]` protocols/ABC |
 | `frame.py` | `Frame` dataclass (PIL Image + average-hash) |
 | `dedup.py` | `is_dup()`, `dedup_unique_frames()`, `dedup_unique_hashes()`, `ssim_dedup()` [deprecated] |
-| `frame_cov.py` | `FrameCoverage`, `FrameMonitor`, `BKFrameMonitor`, `get_frame_cov()`, `_UnionFind`, `_BKTree` |
+| `frame_cov.py` | `FrameCoverage`, `FrameMonitor`, `BKFrameMonitor`, `RustBKFrameMonitor`, `get_frame_cov()`, `_UnionFind`, `_BKTree` |
 | `loader.py` | `load_mp4()`, `load_mp4_lazy()`, `load_mp4_last_n()` |
 | `writer.py` | `write_mp4()`, `write_mp4_cv2()` |
 | `stitch.py` | `stitch_images()` (panorama via AffineStitcher) |
@@ -80,7 +101,8 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `opencv-python` | Color conversion, video writing, image processing |
 | `scikit-image` | SSIM metric (deprecated path) |
 | `stitching` | Panorama stitching via OpenCV features |
-| `numpy`, `numba` | Numerical arrays, optional JIT acceleration |
+| `numpy` | Numerical arrays |
+| `gamecov-core` (optional) | Rust extension: BK-tree, union-find, coverage tracker (PyO3/maturin) |
 | `returns` | Functional `Result` type for error handling |
 | `deprecated` | `@deprecated` decorator |
 | `typer-slim` | CLI framework |
@@ -110,6 +132,7 @@ uv run pytest -n auto
 - **Integration** (real assets): `test_load_n.py`, `test_load_write_assets.py`
 - **Monotonicity**: `test_monotone.py` (random data), `test_monotone_smb.py` (real SMB recordings)
 - **Differential**: `test_BK_frame_monitor.py` (FrameMonitor vs BKFrameMonitor produce identical results)
+- **Rust backend**: `test_rust_frame_monitor.py` (differential Python vs Rust, order-independence, monotonicity; skipped if `gamecov-core` not installed)
 
 Some tests require assets in `assets/videos/` or `assets/smb/` and will skip if missing.
 

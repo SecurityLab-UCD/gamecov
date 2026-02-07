@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 from dataclasses import dataclass, field
 from typing import Iterable
@@ -11,6 +13,15 @@ from .dedup import is_dup
 from .env import RADIUS
 from .frame import Frame, HashMethod, compute_hash
 from .loader import load_mp4_lazy
+
+
+def _imagehash_to_u64(img_hash: ImageHash) -> int:
+    """Convert an ImageHash to a u64 integer for the Rust backend."""
+    hash_bytes = np.packbits(
+        np.asarray(img_hash.hash, dtype=np.uint8),
+        bitorder="big",
+    ).tobytes()
+    return int.from_bytes(hash_bytes, "big")
 
 
 def _trace_and_unique(
@@ -243,14 +254,11 @@ class BKFrameMonitor(FrameMonitor):
         """
         self.path_seen.add(cov.path_id)
         for img_hash in cov.coverage:
-            hash_bytes = np.packbits(
-                np.asarray(img_hash.hash, dtype=np.uint8),
-                bitorder="big",
-            ).tobytes()
-            if hash_bytes in self._exact_bytes:
+            x = _imagehash_to_u64(img_hash)
+            x_bytes = x.to_bytes(8, "big")
+            if x_bytes in self._exact_bytes:
                 continue
 
-            x = int.from_bytes(hash_bytes, "big")
             neighbors = self._bktree.find_all_within(x, self.radius)
 
             self._uf.make_set(x)
@@ -258,7 +266,7 @@ class BKFrameMonitor(FrameMonitor):
                 self._uf.union(x, nb)
 
             self._bktree.add(x)
-            self._exact_bytes.add(hash_bytes)
+            self._exact_bytes.add(x_bytes)
             self.item_seen.add(img_hash)
 
     @property
@@ -272,3 +280,54 @@ class BKFrameMonitor(FrameMonitor):
         self._bktree = _BKTree()
         self._exact_bytes.clear()
         self._uf = _UnionFind()
+
+
+class RustBKFrameMonitor(FrameMonitor):
+    """Rust-accelerated BKFrameMonitor using gamecov-core.
+
+    Behaviorally identical to :class:`BKFrameMonitor` but delegates the
+    BK-tree, union-find, and coverage tracking to a compiled Rust extension
+    for significantly higher throughput.
+
+    Requires the ``gamecov-core`` package to be installed.
+    """
+
+    def __init__(self, radius: int = RADIUS):
+        try:
+            import gamecov_core  # type: ignore[import-untyped]
+        except ImportError as exc:
+            raise ImportError(
+                "gamecov-core is not installed. Install with: pip install gamecov-core"
+            ) from exc
+        super().__init__()
+        self._tracker: gamecov_core.CoverageTracker = gamecov_core.CoverageTracker(
+            radius
+        )
+        self._exact: set[int] = set()
+        self.radius = radius
+
+    def add_cov(self, cov: Coverage[ImageHash]) -> None:
+        """Add coverage using Rust-accelerated data structures."""
+        self.path_seen.add(cov.path_id)
+        for img_hash in cov.coverage:
+            x = _imagehash_to_u64(img_hash)
+            if x in self._exact:
+                continue
+
+            self._tracker.add_hash(x)
+            self._exact.add(x)
+            self.item_seen.add(img_hash)
+
+    @property
+    def coverage_count(self) -> int:
+        """Order-independent coverage from Rust implementation."""
+        count: int = self._tracker.coverage_count
+        return count
+
+    def reset(self) -> None:
+        """Reset all monitor state."""
+        super().reset()
+        import gamecov_core  # type: ignore[import-untyped]
+
+        self._tracker = gamecov_core.CoverageTracker(self.radius)
+        self._exact.clear()

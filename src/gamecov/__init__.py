@@ -1,7 +1,13 @@
 from .cov_base import Coverage, CoverageItem, CoverageMonitor
 from .dedup import dedup_unique_frames
 from .frame import Frame, HashMethod
-from .frame_cov import BKFrameMonitor, FrameCoverage, FrameMonitor, get_frame_cov
+from .frame_cov import (
+    BKFrameMonitor,
+    FrameCoverage,
+    FrameMonitor,
+    RustBKFrameMonitor,
+    get_frame_cov,
+)
 from .loader import load_mp4, load_mp4_lazy
 from .stitch import stitch_images
 
@@ -19,4 +25,5 @@ __all__ = [
     "Coverage",
     "CoverageMonitor",
     "BKFrameMonitor",
+    "RustBKFrameMonitor",
 ]

@@ -16,3 +16,6 @@ assets/
 .hypothesis/
 prof/
 .coverage
+
+# Rust build artifacts
+gamecov-core/target/

@@ -79,6 +79,32 @@ print(f"Total unique frames: {len(monitor.item_seen)}")
 print(f"Unique paths: {len(monitor.path_seen)}")
 ```
 
+### Rust-accelerated monitor (optional)
+
+If `gamecov-core` is installed, `RustBKFrameMonitor` provides the same interface
+backed by a compiled Rust extension for significantly higher throughput:
+
+```python
+from gamecov import FrameCoverage
+from gamecov.frame_cov import RustBKFrameMonitor
+
+monitor = RustBKFrameMonitor()  # same API as BKFrameMonitor
+
+for recording in recordings:
+    cov = FrameCoverage(recording)
+    if not monitor.is_seen(cov):
+        monitor.add_cov(cov)
+
+print(f"Coverage components: {monitor.coverage_count}")
+```
+
+Install `gamecov-core` from the sibling crate:
+
+```bash
+cd gamecov-core
+maturin develop --release
+```
+
 ### CLI
 
 ```bash
