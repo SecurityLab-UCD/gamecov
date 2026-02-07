@@ -25,7 +25,7 @@ Two frames are considered duplicates if the Hamming distance between their perce
 
 ## Installation
 
-Requires Python >= 3.11.
+Requires Python >= 3.11 and a [Rust toolchain](https://rustup.rs/) (for building from source).
 
 ### As a package
 
@@ -40,6 +40,8 @@ Or with pip:
 ```bash
 pip install git+https://github.com/SecurityLab-UCD/gamecov.git
 ```
+
+This builds both the Python package and the embedded Rust extension (`gamecov._gamecov_core`) in a single step.
 
 ### For development
 
@@ -79,6 +81,24 @@ print(f"Total unique frames: {len(monitor.item_seen)}")
 print(f"Unique paths: {len(monitor.path_seen)}")
 ```
 
+### Rust-accelerated monitor
+
+`RustBKFrameMonitor` provides the same interface as `BKFrameMonitor`,
+backed by an embedded Rust extension for significantly higher throughput:
+
+```python
+from gamecov import FrameCoverage, RustBKFrameMonitor
+
+monitor = RustBKFrameMonitor()  # same API as BKFrameMonitor
+
+for recording in recordings:
+    cov = FrameCoverage(recording)
+    if not monitor.is_seen(cov):
+        monitor.add_cov(cov)
+
+print(f"Coverage components: {monitor.coverage_count}")
+```
+
 ### CLI
 
 ```bash
@@ -90,8 +110,12 @@ uv run python src/main.py --input-mp4-path path/to/video.mp4 --confidence-thresh
 
 ### Prerequisites
 
+- Python >= 3.11
+- [Rust toolchain](https://rustup.rs/) (stable)
+- [uv](https://docs.astral.sh/uv/)
+
 ```bash
-# Install dependencies
+# Install dependencies (builds the Rust extension automatically)
 uv sync
 
 # Install pre-commit hooks
@@ -101,11 +125,24 @@ uv run pre-commit install
 ### Running Tests
 
 ```bash
-# Run all tests in parallel
+# Run all Python tests in parallel
 uv run pytest -n auto
 
 # Run with coverage
 uv run pytest -n auto --cov=gamecov
+
+# Run Rust unit and property tests
+cargo test
+```
+
+### Benchmarks
+
+```bash
+# Compare Python vs Rust monitor throughput
+uv run pytest benchmarks/ --benchmark-enable
+
+# Side-by-side grouped by backend
+uv run pytest benchmarks/ --benchmark-enable --benchmark-group-by=param:backend
 ```
 
 ### Code Quality
@@ -121,3 +158,29 @@ uv run ruff check src/
 ### CI
 
 GitHub Actions runs four checks on every PR: `pytest`, `mypy`, `ruff`, and `pylint`.
+The CI workflow installs the Rust toolchain before building.
+
+## Performance: Rust vs Python Backend
+
+The embedded Rust extension (`RustBKFrameMonitor`) provides significant speedups
+over the pure-Python `BKFrameMonitor` for the core `add_cov`/`is_seen` monitor operations.
+The advantage grows with workload size as the BK-tree and union-find structures scale.
+
+Benchmark results (mean time per iteration, lower is better):
+
+| Recordings | Python (ms) | Rust (ms) | Speedup |
+| ---------- | ----------- | --------- | ------- |
+| 10         | 4.04        | 2.31      | 1.75x   |
+| 50         | 42.95       | 15.00     | 2.86x   |
+| 200        | 424.36      | 111.03    | 3.82x   |
+| 500        | 2,349.74    | 549.40    | 4.28x   |
+
+The Rust backend achieves **1.8x -- 4.3x** speedup,
+with larger gains at higher workloads where BK-tree traversal and union-find operations dominate.
+Each recording contains randomly generated `FrameCoverage` objects with perceptual hashes.
+
+Reproduce these results with:
+
+```bash
+uv run pytest benchmarks/ --benchmark-enable --benchmark-group-by=param:backend
+```

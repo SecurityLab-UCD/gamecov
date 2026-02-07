@@ -16,3 +16,7 @@ assets/
 .hypothesis/
 prof/
 .coverage
+
+# Rust build artifacts
+target/
+Cargo.lock
