@@ -25,7 +25,7 @@ Two frames are considered duplicates if the Hamming distance between their perce
 
 ## Installation
 
-Requires Python >= 3.11.
+Requires Python >= 3.11 and a [Rust toolchain](https://rustup.rs/) (for building from source).
 
 ### As a package
 
@@ -40,6 +40,8 @@ Or with pip:
 ```bash
 pip install git+https://github.com/SecurityLab-UCD/gamecov.git
 ```
+
+This builds both the Python package and the embedded Rust extension (`gamecov._gamecov_core`) in a single step.
 
 ### For development
 
@@ -79,14 +81,13 @@ print(f"Total unique frames: {len(monitor.item_seen)}")
 print(f"Unique paths: {len(monitor.path_seen)}")
 ```
 
-### Rust-accelerated monitor (optional)
+### Rust-accelerated monitor
 
-If `gamecov-core` is installed, `RustBKFrameMonitor` provides the same interface
-backed by a compiled Rust extension for significantly higher throughput:
+`RustBKFrameMonitor` provides the same interface as `BKFrameMonitor`,
+backed by an embedded Rust extension for significantly higher throughput:
 
 ```python
-from gamecov import FrameCoverage
-from gamecov.frame_cov import RustBKFrameMonitor
+from gamecov import FrameCoverage, RustBKFrameMonitor
 
 monitor = RustBKFrameMonitor()  # same API as BKFrameMonitor
 
@@ -96,13 +97,6 @@ for recording in recordings:
         monitor.add_cov(cov)
 
 print(f"Coverage components: {monitor.coverage_count}")
-```
-
-Install `gamecov-core` from the sibling crate:
-
-```bash
-cd gamecov-core
-maturin develop --release
 ```
 
 ### CLI
@@ -116,8 +110,12 @@ uv run python src/main.py --input-mp4-path path/to/video.mp4 --confidence-thresh
 
 ### Prerequisites
 
+- Python >= 3.11
+- [Rust toolchain](https://rustup.rs/) (stable)
+- [uv](https://docs.astral.sh/uv/)
+
 ```bash
-# Install dependencies
+# Install dependencies (builds the Rust extension automatically)
 uv sync
 
 # Install pre-commit hooks
@@ -127,11 +125,14 @@ uv run pre-commit install
 ### Running Tests
 
 ```bash
-# Run all tests in parallel
+# Run all Python tests in parallel
 uv run pytest -n auto
 
 # Run with coverage
 uv run pytest -n auto --cov=gamecov
+
+# Run Rust unit and property tests
+cargo test
 ```
 
 ### Code Quality
@@ -147,3 +148,4 @@ uv run ruff check src/
 ### CI
 
 GitHub Actions runs four checks on every PR: `pytest`, `mypy`, `ruff`, and `pylint`.
+The CI workflow installs the Rust toolchain before building.
