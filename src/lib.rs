@@ -118,6 +118,7 @@ impl CoverageTracker {
 
 /// gamecov_core — Rust-accelerated core for gamecov frame coverage monitoring.
 #[pymodule]
+#[pyo3(name = "_gamecov_core")]
 fn gamecov_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<BKTree>()?;
     m.add_class::<UnionFind>()?;

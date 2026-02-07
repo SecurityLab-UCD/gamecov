@@ -13,10 +13,17 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 
 ```
 .
+├── Cargo.toml                   # Rust manifest (maturin builds the extension)
+├── pyproject.toml               # Project metadata, maturin build backend
 ├── src/
 │   ├── main.py                  # CLI entry point (Typer)
+│   ├── lib.rs                   # PyO3 module entry point (Rust)
+│   ├── bktree.rs                # BK-tree<u64> with POPCNT Hamming distance
+│   ├── unionfind.rs             # Flat Vec-based union-find
+│   ├── monitor.rs               # CoverageTracker (BK-tree + UnionFind combined)
 │   └── gamecov/
 │       ├── __init__.py          # Public API re-exports
+│       ├── _gamecov_core.pyi    # Type stub for Rust extension
 │       ├── cov_base.py          # Abstract protocols: CoverageItem, Coverage, CoverageMonitor
 │       ├── frame.py             # Frame dataclass (PIL Image wrapper with average-hash)
 │       ├── dedup.py             # Deduplication algorithms (pHash, SSIM [deprecated])
@@ -27,6 +34,8 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │       ├── generator.py         # Hypothesis strategies for property-based testing
 │       ├── env.py               # Runtime config (RADIUS env var)
 │       └── py.typed             # PEP 561 marker
+├── rust-tests/
+│   └── prop_tests.rs            # Rust proptest property-based tests
 ├── tests/
 │   ├── test_generators.py       # Frame/FrameList generation strategies
 │   ├── test_dedup.py            # Dedup monotonicity properties
@@ -42,32 +51,20 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   └── smb/                     # Super Smash Bros recordings for stress tests
 ├── docs/
 │   └── design.md                # Architecture and design documentation
-├── pyproject.toml               # Project metadata, dependencies, tool configs
 ├── .pre-commit-config.yaml      # Pre-commit hooks
 ├── .github/workflows/           # CI: pytest, mypy, ruff, pylint
 ├── AGENTS.md                    # This file
 └── README.md                    # Human-facing documentation
 ```
 
-### gamecov-core (Rust extension)
+### Rust extension (gamecov-core)
 
-The `gamecov-core/` subdirectory contains a Rust crate (PyO3/maturin) providing
-high-performance replacements for the BK-tree, union-find, and coverage tracker.
+The Rust extension is built as part of the package via maturin. The compiled
+module is installed as `gamecov._gamecov_core` and provides high-performance
+replacements for the BK-tree, union-find, and coverage tracker.
 
-```
-gamecov-core/
-├── Cargo.toml
-├── pyproject.toml
-├── src/
-│   ├── lib.rs          # PyO3 module: BKTree, UnionFind, CoverageTracker
-│   ├── bktree.rs       # BK-tree<u64> with POPCNT Hamming distance
-│   ├── unionfind.rs    # Flat Vec-based union-find
-│   └── monitor.rs      # CoverageTracker (BK-tree + UnionFind combined)
-└── tests/
-    └── prop_tests.rs   # proptest property-based tests
-```
-
-Build with: `cd gamecov-core && maturin develop --release`
+Build the package (includes Rust compilation): `uv sync` or `pip install .`
+Run Rust tests independently: `cargo test`
 
 ## Design
 
@@ -102,7 +99,7 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `scikit-image` | SSIM metric (deprecated path) |
 | `stitching` | Panorama stitching via OpenCV features |
 | `numpy` | Numerical arrays |
-| `gamecov-core` (optional) | Rust extension: BK-tree, union-find, coverage tracker (PyO3/maturin) |
+| `gamecov._gamecov_core` | Built-in Rust extension: BK-tree, union-find, coverage tracker (PyO3/maturin) |
 | `returns` | Functional `Result` type for error handling |
 | `deprecated` | `@deprecated` decorator |
 | `typer-slim` | CLI framework |
@@ -132,7 +129,7 @@ uv run pytest -n auto
 - **Integration** (real assets): `test_load_n.py`, `test_load_write_assets.py`
 - **Monotonicity**: `test_monotone.py` (random data), `test_monotone_smb.py` (real SMB recordings)
 - **Differential**: `test_BK_frame_monitor.py` (FrameMonitor vs BKFrameMonitor produce identical results)
-- **Rust backend**: `test_rust_frame_monitor.py` (differential Python vs Rust, order-independence, monotonicity; skipped if `gamecov-core` not installed)
+- **Rust backend**: `test_rust_frame_monitor.py` (differential Python vs Rust, order-independence, monotonicity)
 
 Some tests require assets in `assets/videos/` or `assets/smb/` and will skip if missing.
 

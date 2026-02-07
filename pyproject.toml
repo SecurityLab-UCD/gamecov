@@ -23,8 +23,13 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["maturin>=1.9,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+python-source = "src"
+module-name = "gamecov._gamecov_core"
+features = ["pyo3/extension-module"]
 
 [tool.pylint.messages_control]
 disable = [

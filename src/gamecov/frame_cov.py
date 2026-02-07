@@ -294,13 +294,14 @@ class RustBKFrameMonitor(FrameMonitor):
 
     def __init__(self, radius: int = RADIUS):
         try:
-            import gamecov_core  # type: ignore[import-untyped]
+            from gamecov import _gamecov_core
         except ImportError as exc:
             raise ImportError(
-                "gamecov-core is not installed. Install with: pip install gamecov-core"
+                "gamecov Rust extension not available. "
+                "Reinstall gamecov from source with a Rust toolchain."
             ) from exc
         super().__init__()
-        self._tracker: gamecov_core.CoverageTracker = gamecov_core.CoverageTracker(
+        self._tracker: _gamecov_core.CoverageTracker = _gamecov_core.CoverageTracker(
             radius
         )
         self._exact: set[int] = set()
@@ -327,7 +328,7 @@ class RustBKFrameMonitor(FrameMonitor):
     def reset(self) -> None:
         """Reset all monitor state."""
         super().reset()
-        import gamecov_core  # type: ignore[import-untyped]
+        from gamecov import _gamecov_core
 
-        self._tracker = gamecov_core.CoverageTracker(self.radius)
+        self._tracker = _gamecov_core.CoverageTracker(self.radius)
         self._exact.clear()

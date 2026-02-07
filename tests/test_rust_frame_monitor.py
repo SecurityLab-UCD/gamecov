@@ -6,7 +6,7 @@ import tempfile
 import pytest
 from hypothesis import given, settings, strategies as st, HealthCheck
 
-gamecov_core = pytest.importorskip("gamecov_core")
+pytest.importorskip("gamecov._gamecov_core")
 
 from gamecov import FrameCoverage, BKFrameMonitor
 from gamecov.frame_cov import RustBKFrameMonitor

@@ -14,6 +14,10 @@ pyo3 = { version = "0.23", features = ["extension-module"] }
 [dev-dependencies]
 proptest = "1"
 
+[[test]]
+name = "prop_tests"
+path = "rust-tests/prop_tests.rs"
+
 [profile.release]
 lto = "fat"
 codegen-units = 1

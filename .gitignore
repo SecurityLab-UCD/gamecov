@@ -18,4 +18,5 @@ prof/
 .coverage
 
 # Rust build artifacts
-gamecov-core/target/
+target/
+Cargo.lock
