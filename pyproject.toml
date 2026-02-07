@@ -72,13 +72,15 @@ warn_unreachable = true
 warn_unused_ignores = false
 plugins = ["returns.contrib.mypy.returns_plugin"]
 
-# [tool.pytest.ini_options]
-# pytest_plugins = ['pytest_profiling']
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--benchmark-disable"
 
 [dependency-groups]
 dev = [
     "mypy>=1.15.0",
     "pre-commit>=4.5.1",
+    "pytest-benchmark>=5.1.0",
     "pytest-cov>=6.2.1",
     "pytest-profiling>=1.8.1",
     "pytest-xdist>=3.8.0",

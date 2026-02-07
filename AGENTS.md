@@ -46,6 +46,9 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   ├── test_BK_frame_monitor.py # Differential: FrameMonitor vs BKFrameMonitor
 │   ├── test_rust_frame_monitor.py # Differential & monotonicity: BKFrameMonitor vs RustBKFrameMonitor
 │   └── test_monotone_smb.py     # Real-world monotonicity on SMB dataset
+├── benchmarks/
+│   ├── conftest.py              # Session-scoped fixtures (pre-generated FrameCoverage)
+│   └── test_bench_monitor.py    # Python vs Rust monitor throughput benchmarks
 ├── assets/
 │   ├── videos/                  # Small sample MP4s for integration tests
 │   └── smb/                     # Super Smash Bros recordings for stress tests
@@ -112,6 +115,7 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `mypy` | Static type checking (strict mode, returns plugin) |
 | `ruff` | Linting and formatting |
 | `pre-commit` | Pre-commit hook runner |
+| `pytest-benchmark` | Performance benchmarking (Python vs Rust) |
 | `pytest-xdist` | Parallel test execution (`-n auto`) |
 | `pytest-cov` | Coverage reporting |
 | `pytest-profiling` | Performance profiling |
@@ -137,6 +141,24 @@ Some tests require assets in `assets/videos/` or `assets/smb/` and will skip if 
 
 - `RADIUS` — Hamming distance threshold (default `5`).
 - `N_MAX` — Maximum number of recordings to process in monotonicity tests (default `100`).
+
+## Benchmarks
+
+```bash
+# Run benchmarks (disabled by default during normal test runs)
+uv run pytest benchmarks/ --benchmark-enable
+
+# Group output by backend for side-by-side comparison
+uv run pytest benchmarks/ --benchmark-enable --benchmark-group-by=param:backend
+
+# Save results for later comparison
+uv run pytest benchmarks/ --benchmark-enable --benchmark-save=baseline
+uv run pytest benchmarks/ --benchmark-enable --benchmark-compare=baseline
+```
+
+Benchmarks live in `benchmarks/` and are excluded from the normal test suite.
+They compare `BKFrameMonitor` (Python) vs `RustBKFrameMonitor` (Rust) throughput
+at the monitor level (`add_cov`/`is_seen` operations).
 
 ## Development
 
