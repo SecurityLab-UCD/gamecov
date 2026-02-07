@@ -159,3 +159,28 @@ uv run ruff check src/
 
 GitHub Actions runs four checks on every PR: `pytest`, `mypy`, `ruff`, and `pylint`.
 The CI workflow installs the Rust toolchain before building.
+
+## Performance: Rust vs Python Backend
+
+The embedded Rust extension (`RustBKFrameMonitor`) provides significant speedups
+over the pure-Python `BKFrameMonitor` for the core `add_cov`/`is_seen` monitor operations.
+The advantage grows with workload size as the BK-tree and union-find structures scale.
+
+Benchmark results (mean time per iteration, lower is better):
+
+| Recordings | Python (ms) | Rust (ms) | Speedup |
+| ---------- | ----------- | --------- | ------- |
+| 10         | 4.04        | 2.31      | 1.75x   |
+| 50         | 42.95       | 15.00     | 2.86x   |
+| 200        | 424.36      | 111.03    | 3.82x   |
+| 500        | 2,349.74    | 549.40    | 4.28x   |
+
+The Rust backend achieves **1.8x -- 4.3x** speedup,
+with larger gains at higher workloads where BK-tree traversal and union-find operations dominate.
+Each recording contains randomly generated `FrameCoverage` objects with perceptual hashes.
+
+Reproduce these results with:
+
+```bash
+uv run pytest benchmarks/ --benchmark-enable --benchmark-group-by=param:backend
+```
