@@ -186,10 +186,31 @@ Benchmarked on the SMB dataset with `N_MAX=500` recordings:
 
 ## Configuration
 
-| Environment Variable | Default | Description                                        |
-| -------------------- | ------- | -------------------------------------------------- |
-| `RADIUS`             | `5`     | Hamming distance threshold for frame deduplication |
-| `N_MAX`              | `100`   | Max recordings to process in monotonicity tests    |
+### Radius (Hamming Distance Threshold)
+
+The radius parameter controls frame deduplication sensitivity. It can be configured:
+
+1. **Constructor parameter (recommended):**
+   ```python
+   monitor = FrameMonitor(radius=10)
+   monitor = BKFrameMonitor(radius=10)
+   monitor = RustBKFrameMonitor(radius=10)
+   cov = FrameCoverage("recording.mp4", threshold=10)
+   ```
+
+2. **Environment variable (sets default):**
+   ```bash
+   RADIUS=10 python my_script.py
+   ```
+
+See [docs/api.md](api.md) for full API documentation.
+
+### Environment Variables
+
+| Variable | Default | Description                                        |
+| -------- | ------- | -------------------------------------------------- |
+| `RADIUS` | `5`     | Default Hamming distance threshold                 |
+| `N_MAX`  | `100`   | Max recordings to process in monotonicity tests    |
 
 ## Dependencies
 
