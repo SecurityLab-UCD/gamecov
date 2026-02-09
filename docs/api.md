@@ -27,7 +27,7 @@ The `radius` parameter controls how similar two frames must be to be considered 
 |-------|--------|
 | Lower (e.g., 3) | Stricter matching — more frames considered unique |
 | Higher (e.g., 10) | Looser matching — more frames considered duplicates |
-| Default: 5 | Balanced — tolerates compression artifacts while distinguishing meaningfully different states |
+| Default: 10 | Balanced — tolerates animation/position changes while distinguishing different game states |
 
 **Setting the radius:**
 
@@ -52,7 +52,7 @@ cov = FrameCoverage("recording.mp4", threshold=10)
 
 - If frame coverage keeps growing linearly without saturation, increase the radius.
 - If frame coverage saturates too quickly (missing visual distinctions), decrease the radius.
-- Start with the default (5) and adjust based on your game's visual characteristics.
+- Start with the default (10) and adjust based on your game's visual characteristics.
 
 See [docs/tuning.md](tuning.md) for detailed guidance on choosing radius values with empirical results.
 
@@ -70,7 +70,7 @@ from gamecov import FrameCoverage
 cov = FrameCoverage(
     recording_path="gameplay.mp4",
     hash_method="phash",  # or "average"
-    threshold=5,          # Hamming distance threshold
+    threshold=10,         # Hamming distance threshold (default)
 )
 ```
 
@@ -80,7 +80,7 @@ cov = FrameCoverage(
 |-----------|------|---------|-------------|
 | `recording_path` | `str` | required | Path to the MP4 video file |
 | `hash_method` | `HashMethod` | `"phash"` | Perceptual hash algorithm: `"phash"` or `"average"` |
-| `threshold` | `int` | `5` (from `RADIUS` env var) | Hamming distance threshold for deduplication |
+| `threshold` | `int` | `10` (from `RADIUS` env var) | Hamming distance threshold for deduplication |
 
 **Properties:**
 
@@ -119,7 +119,7 @@ monitor = FrameMonitor(radius=5)
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `radius` | `int` | `5` (from `RADIUS` env var) | Hamming distance threshold for duplicate detection |
+| `radius` | `int` | `10` (from `RADIUS` env var) | Hamming distance threshold for duplicate detection |
 
 **Methods:**
 
@@ -175,7 +175,7 @@ monitor = BKFrameMonitor(radius=5)
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `radius` | `int` | `5` (from `RADIUS` env var) | Hamming distance threshold for clustering |
+| `radius` | `int` | `10` (from `RADIUS` env var) | Hamming distance threshold for clustering |
 
 **Methods:**
 
@@ -238,7 +238,7 @@ monitor = RustBKFrameMonitor(radius=5)
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `radius` | `int` | `5` (from `RADIUS` env var) | Hamming distance threshold for clustering |
+| `radius` | `int` | `10` (from `RADIUS` env var) | Hamming distance threshold for clustering |
 
 **API:** Identical to `BKFrameMonitor`.
 
@@ -288,7 +288,7 @@ result = get_frame_cov(
 |-----------|------|---------|-------------|
 | `url` | `str` | required | Path to the MP4 video file |
 | `hash_method` | `HashMethod` | `"phash"` | Perceptual hash algorithm |
-| `threshold` | `int` | `5` (from `RADIUS` env var) | Hamming distance threshold |
+| `threshold` | `int` | `10` (from `RADIUS` env var) | Hamming distance threshold |
 
 **Returns:** `Result[FrameCoverage, Exception]` — use `.unwrap()` or pattern match to extract the value.
 

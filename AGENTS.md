@@ -92,7 +92,7 @@ See [docs/api.md](docs/api.md) for detailed API reference documentation includin
 | `writer.py` | `write_mp4()`, `write_mp4_cv2()` |
 | `stitch.py` | `stitch_images()` (panorama via AffineStitcher) |
 | `generator.py` | Hypothesis strategies: `frames()`, `frames_lists` |
-| `env.py` | `RADIUS` env var (default Hamming distance threshold, `5`); use constructor params to override |
+| `env.py` | `RADIUS` env var (default Hamming distance threshold, `10`); use constructor params to override |
 
 ## Environment and Dependencies
 
@@ -146,7 +146,7 @@ Some tests require assets in `assets/videos/` or `assets/smb/` and will skip if 
 
 ### Environment variables for tests
 
-- `RADIUS` — Default Hamming distance threshold (default `5`). Prefer passing `radius=` to monitor constructors.
+- `RADIUS` — Default Hamming distance threshold (default `10`). Prefer passing `radius=` to monitor constructors.
 - `N_MAX` — Maximum number of recordings to process in monotonicity tests (default `100`).
 
 ## Benchmarks

@@ -25,7 +25,7 @@ The `radius` parameter controls the Hamming distance threshold for considering t
 | Radius | Effect                                           | Use Case                                |
 | ------ | ------------------------------------------------ | --------------------------------------- |
 | 3-5    | Strict — only very similar frames are duplicates | High-fidelity visual distinction needed |
-| 8-10   | Moderate — tolerates animation/position changes  | **Recommended starting point**          |
+| 8-10   | Moderate — tolerates animation/position changes  | **Default (radius=10)**                 |
 | 12-15  | Lenient — groups visually related frames         | Games with high visual entropy          |
 | 20+    | Very lenient — only major scene changes count    | Coarse-grained coverage                 |
 
@@ -82,9 +82,9 @@ We analyzed 30 recordings from three independent fuzzing runs on a Zelda game wi
 
 ### Key Observations
 
-1. **radius=5 (default)**: Coverage grows nearly linearly. Final counts vary widely (133-245) across runs. Not suitable for convergence-based stopping criteria.
+1. **radius=5**: Coverage grows nearly linearly. Final counts vary widely (133-245) across runs. Not suitable for convergence-based stopping criteria.
 
-2. **radius=10**: Moderate convergence. Coverage still growing but slowing down. Good balance between detail and convergence.
+2. **radius=10 (default)**: Moderate convergence. Coverage still growing but slowing down. Good balance between detail and convergence.
 
 3. **radius=15**: Effectively saturated. Coverage plateaus quickly. Recommended for games with high visual entropy.
 
