@@ -54,6 +54,8 @@ cov = FrameCoverage("recording.mp4", threshold=10)
 - If frame coverage saturates too quickly (missing visual distinctions), decrease the radius.
 - Start with the default (5) and adjust based on your game's visual characteristics.
 
+See [docs/tuning.md](tuning.md) for detailed guidance on choosing radius values with empirical results.
+
 ---
 
 ## Coverage Classes

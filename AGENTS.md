@@ -54,7 +54,8 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   └── smb/                     # Super Smash Bros recordings for stress tests
 ├── docs/
 │   ├── api.md                   # API reference documentation
-│   └── frame_cov.md             # Architecture and design documentation
+│   ├── frame_cov.md             # Architecture and design documentation
+│   └── tuning.md                # Radius/threshold tuning guide with empirical results
 ├── rustfmt.toml                 # Rust formatting config
 ├── .pre-commit-config.yaml      # Pre-commit hooks (Python + Rust)
 ├── .github/workflows/           # CI: pytest, mypy, ruff, pylint, rust (fmt/clippy/test)

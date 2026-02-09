@@ -203,7 +203,7 @@ The radius parameter controls frame deduplication sensitivity. It can be configu
    RADIUS=10 python my_script.py
    ```
 
-See [docs/api.md](api.md) for full API documentation.
+See [docs/api.md](api.md) for full API documentation and [docs/tuning.md](tuning.md) for guidance on choosing radius values.
 
 ### Environment Variables
 
