@@ -106,7 +106,7 @@ These properties make `BKFrameMonitor.coverage_count` suitable as a fuzzing prog
 
 ### Perceptual Hashing
 
-Each video frame is hashed with pHash (`imagehash.phash`, 8x8 by default). Two frames are considered duplicates if the Hamming distance between their hashes is within `RADIUS` (default 5 bits). This tolerates minor visual differences (compression artifacts, slight camera movement) while distinguishing meaningfully different game states.
+Each video frame is hashed with pHash (`imagehash.phash`, 8x8 by default). Two frames are considered duplicates if the Hamming distance between their hashes is within `RADIUS` (default 10 bits). This tolerates minor visual differences (animation frames, position changes) while distinguishing meaningfully different game states.
 
 The `Frame` dataclass uses `imagehash.average_hash` for Python `__hash__`/set membership, while deduplication logic uses the more discriminating pHash.
 
@@ -186,10 +186,31 @@ Benchmarked on the SMB dataset with `N_MAX=500` recordings:
 
 ## Configuration
 
-| Environment Variable | Default | Description                                        |
-| -------------------- | ------- | -------------------------------------------------- |
-| `RADIUS`             | `5`     | Hamming distance threshold for frame deduplication |
-| `N_MAX`              | `100`   | Max recordings to process in monotonicity tests    |
+### Radius (Hamming Distance Threshold)
+
+The radius parameter controls frame deduplication sensitivity. It can be configured:
+
+1. **Constructor parameter (recommended):**
+   ```python
+   monitor = FrameMonitor(radius=10)
+   monitor = BKFrameMonitor(radius=10)
+   monitor = RustBKFrameMonitor(radius=10)
+   cov = FrameCoverage("recording.mp4", threshold=10)
+   ```
+
+2. **Environment variable (sets default):**
+   ```bash
+   RADIUS=10 python my_script.py
+   ```
+
+See [docs/api.md](api.md) for full API documentation and [docs/tuning.md](tuning.md) for guidance on choosing radius values.
+
+### Environment Variables
+
+| Variable | Default | Description                                        |
+| -------- | ------- | -------------------------------------------------- |
+| `RADIUS` | `10`    | Default Hamming distance threshold                 |
+| `N_MAX`  | `100`   | Max recordings to process in monotonicity tests    |
 
 ## Dependencies
 

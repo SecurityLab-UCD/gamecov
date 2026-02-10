@@ -1,6 +1,6 @@
 [project]
 name = "gamecov"
-version = "0.2.0"
+version = "0.2.1"
 description = "Coverage monitoring for directed game play-testing (Game-Fuzz)"
 readme = "README.md"
 authors = [{ name = "Yifeng He", email = "yfhe.prsn@gmail.com" }]

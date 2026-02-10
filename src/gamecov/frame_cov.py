@@ -56,11 +56,19 @@ def _trace_and_unique(
 class FrameCoverage:
     """track frame coverage in a game-play session"""
 
-    def __init__(self, recording_path: str, hash_method: HashMethod = "phash"):
+    def __init__(
+        self,
+        recording_path: str,
+        hash_method: HashMethod = "phash",
+        threshold: int = RADIUS,
+    ):
         self.recording_path = recording_path
         self.hash_method: HashMethod = hash_method
+        self.threshold = threshold
         self._trace, self.unique_frames = _trace_and_unique(
-            load_mp4_lazy(recording_path), hash_method=hash_method
+            load_mp4_lazy(recording_path),
+            threshold=threshold,
+            hash_method=hash_method,
         )
 
     @property
@@ -90,6 +98,10 @@ class FrameCoverage:
 class FrameMonitor(CoverageMonitor[ImageHash]):
     """monitor frame coverage in a game-play session"""
 
+    def __init__(self, radius: int = RADIUS):
+        super().__init__()
+        self.radius = radius
+
     def is_seen(self, cov: Coverage[ImageHash]) -> bool:
         """Check if the coverage has been seen."""
         return cov.path_id in self.path_seen
@@ -105,14 +117,16 @@ class FrameMonitor(CoverageMonitor[ImageHash]):
             if img_hash in self.item_seen:
                 continue
             # generator with `any` can short-circuit
-            if not any(is_dup(img_hash, h, threshold=RADIUS) for h in self.item_seen):
+            if not any(is_dup(img_hash, h, threshold=self.radius) for h in self.item_seen):
                 self.item_seen.add(img_hash)
 
 
 @safe
-def get_frame_cov(url: str, hash_method: HashMethod = "phash") -> FrameCoverage:
+def get_frame_cov(
+    url: str, hash_method: HashMethod = "phash", threshold: int = RADIUS
+) -> FrameCoverage:
     """Get the frame coverage for a given MP4 file."""
-    return FrameCoverage(url, hash_method=hash_method)
+    return FrameCoverage(url, hash_method=hash_method, threshold=threshold)
 
 
 @dataclass

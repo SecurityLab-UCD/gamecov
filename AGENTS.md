@@ -53,7 +53,9 @@ Future metrics (e.g., audio coverage, state-graph coverage) will follow the same
 │   ├── videos/                  # Small sample MP4s for integration tests
 │   └── smb/                     # Super Smash Bros recordings for stress tests
 ├── docs/
-│   └── design.md                # Architecture and design documentation
+│   ├── api.md                   # API reference documentation
+│   ├── frame_cov.md             # Architecture and design documentation
+│   └── tuning.md                # Radius/threshold tuning guide with empirical results
 ├── rustfmt.toml                 # Rust formatting config
 ├── .pre-commit-config.yaml      # Pre-commit hooks (Python + Rust)
 ├── .github/workflows/           # CI: pytest, mypy, ruff, pylint, rust (fmt/clippy/test)
@@ -74,7 +76,9 @@ Run Rust linting: `cargo clippy --all-targets --all-features -- -D warnings`
 
 ## Design
 
-See [docs/design.md](docs/design.md) for the coverage framework architecture, frame coverage pipeline, BK-tree optimization, and loading strategies.
+See [docs/frame_cov.md](docs/frame_cov.md) for the coverage framework architecture, frame coverage pipeline, BK-tree optimization, and loading strategies.
+
+See [docs/api.md](docs/api.md) for detailed API reference documentation including configuration options.
 
 ## Key Modules (quick reference)
 
@@ -88,7 +92,7 @@ See [docs/design.md](docs/design.md) for the coverage framework architecture, fr
 | `writer.py` | `write_mp4()`, `write_mp4_cv2()` |
 | `stitch.py` | `stitch_images()` (panorama via AffineStitcher) |
 | `generator.py` | Hypothesis strategies: `frames()`, `frames_lists` |
-| `env.py` | `RADIUS` env var (Hamming distance threshold, default `5`) |
+| `env.py` | `RADIUS` env var (default Hamming distance threshold, `10`); use constructor params to override |
 
 ## Environment and Dependencies
 
@@ -142,7 +146,7 @@ Some tests require assets in `assets/videos/` or `assets/smb/` and will skip if 
 
 ### Environment variables for tests
 
-- `RADIUS` — Hamming distance threshold (default `5`).
+- `RADIUS` — Default Hamming distance threshold (default `10`). Prefer passing `radius=` to monitor constructors.
 - `N_MAX` — Maximum number of recordings to process in monotonicity tests (default `100`).
 
 ## Benchmarks
